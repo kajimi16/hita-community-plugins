@@ -1,11 +1,20 @@
 {
   "id": "com.stupidtree.hita.ui.anime",
   "name": "番剧",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "entryClass": "com.stupidtree.hita.ui.anime.AnimeUiPlugin",
-  "apiVersion": 4,
+  "apiVersion": 5,
   "composeVersion": "1.6.8",
   "capabilities": [
     "hita.ui.mainTab"
+  ],
+  "mainTabs": [
+    {
+      "id": "anime",
+      "title": "番剧",
+      "order": 100,
+      "capability": "hita.ui.mainTab",
+      "iconAsset": "tab_anime.png"
+    }
   ]
 }

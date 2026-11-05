@@ -1,174 +1,241 @@
 package com.stupidtree.hita.ui.anime
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.view.View
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.stupidtree.hita.api.ComposeUiPlugin
 import com.stupidtree.hita.api.PluginUiHost
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.CoverLoader
+import com.stupidtree.hita.ui.anime.data.EpisodeItem
+import com.stupidtree.hita.ui.anime.data.HitaniApi
+import com.stupidtree.hita.ui.anime.data.Prefs
+import com.stupidtree.hita.ui.anime.ui.AnimeTheme
+import com.stupidtree.hita.ui.anime.ui.DanmakuScreen
+import com.stupidtree.hita.ui.anime.ui.HomeScreen
+import com.stupidtree.hita.ui.anime.ui.LibraryScreen
+import com.stupidtree.hita.ui.anime.ui.ProfileScreen
+import com.stupidtree.hita.ui.anime.ui.ScheduleScreen
+import com.stupidtree.hita.ui.anime.ui.SearchScreen
+import com.stupidtree.hita.ui.anime.ui.SubjectScreen
 
 /**
- * 番剧界面插件：宿主主界面的第五个 tab，通过 [ComposeUiPlugin] 提供 Compose 视图。
+ * 番剧界面插件：宿主主界面 tab，运行时由 [ComposeUiPlugin] 容器承载。
  *
- * 不含 Activity / 资源表，也不打进宿主 APK；从市场安装后由宿主容器渲染。
+ * 功能对齐 Animeko 的 Android 客户端（浏览 / 时间表 / 搜索 / 追番 / 条目详情 /
+ * 弹幕 / 评论 / 资源索引），但受插件边界限制：
+ * - 不声明 Activity，因此播放交给外部播放器或站内页面；
+ * - 不携带资源表，图标来自宿主的 material-icons；
+ * - 数据直接走 Bangumi v0 与 hit-ani 的公开/会话接口。
  */
 class AnimeUiPlugin : ComposeUiPlugin {
 
     override val id = "com.stupidtree.hita.ui.anime"
     override val displayName = "番剧"
-    override val requiresApi = 4
+    override val requiresApi = 5
 
-    override fun createView(context: Context, host: PluginUiHost): View =
-        ComposeView(context).apply {
+    override fun createView(context: Context, host: PluginUiHost): View {
+        CoverLoader.init(context)
+        return ComposeView(context).apply {
             setContent {
-                MaterialTheme {
-                    AnimePage(context)
+                AnimeTheme(dark = isSystemInDarkTheme()) {
+                    val initialSubjectId = host.arguments.getInt("subjectId", 0)
+                    AnimeApp(context, initialSubjectId)
                 }
             }
         }
+    }
+}
+
+private sealed interface Screen {
+    data object Root : Screen
+    data class Subject(val id: Int, val title: String?) : Screen
+    data class Danmaku(
+        val subjectId: Int,
+        val subjectTitle: String,
+        val episode: EpisodeItem,
+    ) : Screen
+}
+
+private data class TabSpec(val id: String, val title: String, val icon: ImageVector)
+
+private val tabs = listOf(
+    TabSpec("home", "首页", Icons.Filled.Home),
+    TabSpec("schedule", "时间表", Icons.Filled.DateRange),
+    TabSpec("search", "搜索", Icons.Filled.Search),
+    TabSpec("library", "追番", Icons.Filled.Favorite),
+    TabSpec("profile", "我的", Icons.Filled.Person),
+)
+
+@Composable
+private fun AnimeApp(context: Context, initialSubjectId: Int) {
+    val prefs = remember { Prefs(context) }
+    val bgm = remember(prefs.bgmToken) { BgmApi { prefs.bgmToken } }
+    val hitani = remember(prefs.hitaniBase, prefs.hitaniCookie) {
+        HitaniApi(prefs.hitaniBase, prefs.hitaniCookie)
+    }
+
+    var stack by remember {
+        mutableStateOf<List<Screen>>(
+            if (initialSubjectId > 0) {
+                listOf(Screen.Root, Screen.Subject(initialSubjectId, null))
+            } else {
+                listOf(Screen.Root)
+            },
+        )
+    }
+
+    BackHandler(enabled = stack.size > 1) {
+        stack = stack.dropLast(1)
+    }
+
+    when (val top = stack.last()) {
+        is Screen.Root -> RootScreen(
+            prefs = prefs,
+            bgm = bgm,
+            hitani = hitani,
+            onOpenSubject = { id, title ->
+                stack = stack.dropLast(1) + Screen.Subject(id, title)
+            },
+        )
+
+        is Screen.Subject -> SubjectScreen(
+            context = context,
+            prefs = prefs,
+            bgm = bgm,
+            hitani = hitani,
+            subjectId = top.id,
+            initialTitle = top.title,
+            onBack = { stack = stack.dropLast(1) },
+            onOpenSubject = { id, title ->
+                stack = stack + Screen.Subject(id, title)
+            },
+            onOpenDanmaku = { subjectId, subjectTitle, episode ->
+                stack = stack + Screen.Danmaku(subjectId, subjectTitle, episode)
+            },
+        )
+
+        is Screen.Danmaku -> DanmakuScreen(
+            prefs = prefs,
+            hitani = hitani,
+            subjectId = top.subjectId,
+            subjectTitle = top.subjectTitle,
+            episode = top.episode,
+            onBack = { stack = stack.dropLast(1) },
+        )
+    }
 }
 
 @Composable
-private fun AnimePage(context: Context) {
-    var input by remember { mutableStateOf("") }
-    var query by remember { mutableStateOf("") }
-    var loading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var list by remember { mutableStateOf<List<Anime>>(emptyList()) }
-
-    LaunchedEffect(query) {
-        loading = true
-        error = null
-        runCatching {
-            withContext(Dispatchers.IO) {
-                if (query.isBlank()) BangumiRepository.today() else BangumiRepository.search(query)
-            }
-        }.onSuccess { list = it }
-            .onFailure { error = it.message ?: "加载失败" }
-        loading = false
-    }
-
+private fun RootScreen(
+    prefs: Prefs,
+    bgm: BgmApi,
+    hitani: HitaniApi,
+    onOpenSubject: (Int, String?) -> Unit,
+) {
+    var selected by rememberSaveable { mutableStateOf("home") }
     Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        // 宿主本身已有底部导航；插件再放一个会被压在它下面（实测完全不可见），
+        // 因此这里用顶部的分段导航，始终可点。
+        Surface(
+            color = MaterialTheme.colors.surface,
+            elevation = 2.dp,
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            BasicTextField(
-                value = input,
-                onValueChange = { input = it },
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { query = input.trim() }),
-                decorationBox = { inner ->
-                    Box {
-                        if (input.isEmpty()) {
-                            Text(
-                                "搜索番剧",
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                            )
-                        }
-                        inner()
-                    }
-                },
-            )
-            TextButton(onClick = { query = input.trim() }) {
-                Text("搜索")
-            }
-        }
-
-        when {
-            loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(error ?: "")
-            }
-            list.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("没有找到番剧")
-            }
-            else -> LazyColumn(Modifier.fillMaxSize()) {
-                items(list, key = { it.id }) { anime ->
+            Row(Modifier.fillMaxWidth()) {
+                tabs.forEach { tab ->
+                    val active = selected == tab.id
                     Column(
-                        Modifier.fillMaxWidth()
-                            .clickable {
-                                context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://bgm.tv/subject/${anime.id}"),
-                                    )
-                                )
-                            }
-                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                        Modifier
+                            .weight(1f)
+                            .clickable { selected = tab.id }
+                            .padding(vertical = 7.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(
-                            anime.nameCn ?: anime.name,
-                            style = MaterialTheme.typography.body1,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
+                        Icon(
+                            tab.icon,
+                            contentDescription = tab.title,
+                            tint = if (active) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                MaterialTheme.colors.onSurface.copy(alpha = 0.42f)
+                            },
+                            modifier = Modifier.size(20.dp),
                         )
-                        val sub = buildString {
-                            if (!anime.nameCn.isNullOrBlank()) append(anime.name)
-                            if (anime.airWeekday != null) {
-                                if (isNotEmpty()) append(" · ")
-                                append("周").append(weekdayName(anime.airWeekday))
-                            }
-                            if (anime.score != null) {
-                                if (isNotEmpty()) append(" · ")
-                                append("评分 ").append(anime.score)
-                            }
-                        }
-                        if (sub.isNotBlank()) {
-                            Text(
-                                sub,
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
+                        Text(
+                            tab.title,
+                            fontSize = 11.sp,
+                            color = if (active) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                            },
+                        )
                     }
-                    Divider()
                 }
             }
         }
+        Box(Modifier.fillMaxSize()) {
+            when (selected) {
+                "home" -> HomeScreen(
+                    prefs = prefs,
+                    bgm = bgm,
+                    onOpenSubject = onOpenSubject,
+                    onOpenTab = { selected = it },
+                )
+                "schedule" -> ScheduleScreen(
+                    hitani = hitani,
+                    bgm = bgm,
+                    onOpenSubject = onOpenSubject,
+                )
+                "search" -> SearchScreen(
+                    prefs = prefs,
+                    bgm = bgm,
+                    onOpenSubject = onOpenSubject,
+                )
+                "library" -> LibraryScreen(
+                    prefs = prefs,
+                    bgm = bgm,
+                    onOpenSubject = onOpenSubject,
+                    onOpenProfile = { selected = "profile" },
+                )
+                else -> ProfileScreen(
+                    prefs = prefs,
+                    bgm = bgm,
+                    hitani = hitani,
+                )
+            }
+        }
     }
-}
-
-private fun weekdayName(day: Int): String = when (day) {
-    1 -> "一"; 2 -> "二"; 3 -> "三"; 4 -> "四"; 5 -> "五"; 6 -> "六"; else -> "日"
 }
