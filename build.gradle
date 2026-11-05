@@ -30,9 +30,9 @@ tasks.register('publishAnime') {
         def module = project(':anime-plugin')
         def apk = module.layout.buildDirectory.file(
             'outputs/apk/release/anime-plugin-release-unsigned.apk').get().asFile
-        def out = rootProject.file('dist/anime-0.2.1.apk')
+        def out = rootProject.file('dist/anime-0.2.2.apk')
         out.parentFile.mkdirs()
         out.bytes = apk.bytes
-        println "dist/anime-0.2.1.apk sha256=${sha256(out)}"
+        println "dist/anime-0.2.2.apk sha256=${sha256(out)}"
     }
 }

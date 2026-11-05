@@ -1,8 +1,9 @@
 package com.stupidtree.hita.ui.anime
 
 import android.content.Context
+import android.view.KeyEvent
 import android.view.View
-import androidx.activity.compose.BackHandler
+import android.widget.FrameLayout
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,14 +70,61 @@ class AnimeUiPlugin : ComposeUiPlugin {
 
     override fun createView(context: Context, host: PluginUiHost): View {
         CoverLoader.init(context)
-        return ComposeView(context).apply {
+        val backDispatcher = BackDispatcher()
+        val composeView = ComposeView(context).apply {
             setContent {
                 AnimeTheme(dark = isSystemInDarkTheme()) {
                     val initialSubjectId = host.arguments.getInt("subjectId", 0)
-                    AnimeApp(context, initialSubjectId)
+                    AnimeApp(context, initialSubjectId, backDispatcher)
                 }
             }
         }
+        return BackAwareContainer(context, backDispatcher).apply {
+            addView(
+                composeView,
+                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT),
+            )
+        }
+    }
+}
+
+/**
+ * 宿主的 `MainActivity.onBackPressed()` 不调用 `super`，直接回桌面，
+ * 因此 Compose 的 `BackHandler` / `OnBackPressedDispatcher` 都收不到返回键。
+ * 这里是唯一的拦截点：在插件的根 View 上消费 KEYCODE_BACK。
+ *
+ * `ComposeView` 是 final，不能继承，所以用 FrameLayout 包一层；
+ * 它位于按键分发链上，能在 Activity 处理返回键之前拿到事件。
+ */
+private class BackDispatcher {
+    var onBack: (() -> Boolean)? = null
+}
+
+private class BackAwareContainer(
+    context: Context,
+    private val backDispatcher: BackDispatcher,
+) : FrameLayout(context) {
+
+    init {
+        // 焦点链兜底：宿主工具栏/ViewPager 持有焦点时事件不会经过本容器。
+        isFocusable = true
+        isFocusableInTouchMode = true
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        requestFocus()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (isShown &&
+            event.keyCode == KeyEvent.KEYCODE_BACK &&
+            event.action == KeyEvent.ACTION_UP &&
+            !event.isCanceled
+        ) {
+            if (backDispatcher.onBack?.invoke() == true) return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 }
 
@@ -99,7 +149,11 @@ private val tabs = listOf(
 )
 
 @Composable
-private fun AnimeApp(context: Context, initialSubjectId: Int) {
+private fun AnimeApp(
+    context: Context,
+    initialSubjectId: Int,
+    backDispatcher: BackDispatcher,
+) {
     val prefs = remember { Prefs(context) }
     val bgm = remember(prefs.bgmToken) { BgmApi { prefs.bgmToken } }
     val hitani = remember(prefs.hitaniBase, prefs.hitaniCookie) {
@@ -116,8 +170,18 @@ private fun AnimeApp(context: Context, initialSubjectId: Int) {
         )
     }
 
-    BackHandler(enabled = stack.size > 1) {
-        stack = stack.dropLast(1)
+    SideEffect {
+        backDispatcher.onBack = {
+            if (stack.size > 1) {
+                stack = stack.dropLast(1)
+                true
+            } else {
+                false
+            }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose { backDispatcher.onBack = null }
     }
 
     when (val top = stack.last()) {
@@ -126,7 +190,7 @@ private fun AnimeApp(context: Context, initialSubjectId: Int) {
             bgm = bgm,
             hitani = hitani,
             onOpenSubject = { id, title ->
-                stack = stack.dropLast(1) + Screen.Subject(id, title)
+                stack = stack + Screen.Subject(id, title)
             },
         )
 

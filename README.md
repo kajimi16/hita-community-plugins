@@ -8,7 +8,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 |---|---|---|
 | 番剧 `com.stupidtree.hita.ui.anime` | 参照 Animeko Android 端的番剧客户端：首页 / 时间表 / 搜索 / 追番 / 条目详情 / 弹幕 / 评论 / 资源 | API 5+，Compose 1.6.8 |
 
-## 番剧插件 0.2.1
+## 番剧插件 0.2.2
 
 ### 能力
 
@@ -51,7 +51,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 
 | 字段 | 值 |
 |---|---|
-| version | `0.2.1` |
+| version | `0.2.2` |
 | apiVersion | `5` |
 | composeVersion | `1.6.8` |
 | capabilities | `hita.ui.mainTab` |
@@ -63,7 +63,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 ./gradlew publishAnime
 ```
 
-产物：`dist/anime-0.2.1.apk`，构建脚本会打印 sha256。
+产物：`dist/anime-0.2.2.apk`，构建脚本会打印 sha256。
 
 依赖的 `:api` / `:model` / `:component` AAR 放在 `libs/`，来自 OH-MY-HITA 发布构建。
 插件对 Compose、协程、`kotlin-stdlib` 以及 `material-icons-core` 使用 `compileOnly`，
@@ -98,6 +98,13 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 3. 在 `settings.gradle` 注册模块，把 APK 复制到 `dist/`
 4. 更新市场索引（主仓库 `market` 分支）
 
+## 0.2.2 变更
+
+- 修正返回键：宿主 `onBackPressed()` 不调用 `super`，Compose `BackHandler` 收不到；
+  插件改为在根 `FrameLayout` 上消费 `KEYCODE_BACK`，系统返回键现在按
+  「弹幕页 → 条目详情 → 番剧首页」逐级退出，不再直接回桌面。
+- 新增 `isShown` 守卫，切到宿主其它 tab 时不会偷吃返回键。
+
 ## 0.2.1 变更
 
 - 修正放送表逻辑：此前按 `air_date` 区间搜索，只能看到「本周首播」的番，
@@ -106,8 +113,8 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 
 ## 已知限制
 
-- 宿主的 `MainActivity.onBackPressed()` 不调用 `super`，插件内的
-  `BackHandler` 收不到系统返回键。条目/弹幕页左上角有返回按钮。
+- 返回键已在插件根 View 拦截；若宿主未来改成标准 `OnBackPressedDispatcher`，
+  这段兜底仍然生效（Compose 的 `BackHandler` 也可重新启用）。
 - 宿主底部导航会盖住运行时 tab 的底部区域，因此插件内部导航放在顶部。
 - 插件不能声明 Activity，播放交给外站/外部播放器；这不影响找番、追番、弹幕与评论。
 
