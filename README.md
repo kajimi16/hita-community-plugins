@@ -155,3 +155,20 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 ## License
 
 MIT
+
+## 发布插件（CI）
+
+中央索引：`registry/index.json`。作者不需要给宿主仓库提 PR。
+
+1. 插件仓库保持独立 Gradle 工程（参考 hita-plugin-template，带 `gradlew` 与 `libs/`）。
+2. 在 GitHub Actions 运行 **Publish Plugin**，填写仓库、模块、类型、id、版本、入口类等。
+3. CI 会：
+   - checkout 插件仓库并构建 `assembleRelease`（界面）或 `buildPluginDex`（逻辑）
+   - 复制产物到 `dist/<id>-<version>.apk|dex`
+   - 计算 sha256、更新 `registry/index.json`
+   - 提交产物与索引
+4. 市场刷新后即可安装/更新。
+
+产物当前托管在仓库 `dist/`（经 raw 下载）；后续可把同一步换成 S3/对象存储，只要索引里的 `url` 指向最终地址。
+
+索引相对地址以 `registry/index.json` 为基准，`../dist/...` 会解析到仓库 `dist/`。

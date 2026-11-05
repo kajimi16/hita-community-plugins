@@ -1,0 +1,42 @@
+{
+  "plugins": [],
+  "uiPlugins": [
+    {
+      "id": "com.stupidtree.hita.ui.anime",
+      "name": "番剧",
+      "version": "0.3.0",
+      "url": "../dist/anime-0.3.0.apk",
+      "sha256": "c396f74c4e8d05cc1dc886ba0864f46f31ce357e73125714d8685b73dd08be3e",
+      "size": 236160,
+      "minHostApi": 5,
+      "entryClass": "com.stupidtree.hita.ui.anime.AnimeUiPlugin",
+      "description": "Bangumi 追番、放送表、搜索、弹幕与资源索引",
+      "changelog": "课表联动、缓存回退与清晰封面",
+      "author": "kajimi16",
+      "tags": [
+        "番剧",
+        "Bangumi",
+        "社区"
+      ],
+      "repo": "https://github.com/kajimi16/hita-community-plugins",
+      "updatedAt": "2026-11-05"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.resource",
+      "name": "课程资源",
+      "version": "0.4.8",
+      "url": "https://ani2-ext.kajimi.cc/hita/market/course-resource-0.4.8.apk",
+      "sha256": "8fc623f80e63875caf0d4aa28c6a54854b302d3b15be0443fce2415bfdb97a15",
+      "size": 647061,
+      "minHostApi": 3,
+      "description": "课程资料浏览与搜索（运行时界面插件）",
+      "author": "kajimi16",
+      "tags": [
+        "HITA",
+        "课程"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-05"
+    }
+  ]
+}

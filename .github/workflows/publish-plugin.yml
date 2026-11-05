@@ -1,0 +1,137 @@
+name: Publish Plugin
+
+# 作者提交仓库地址与模块，CI 构建插件、计算 sha256、写入 dist/ 与中央索引。
+# 目标仓库需与 hita-plugin-template 结构一致（自带 gradlew 与 libs）。
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: '插件仓库（owner/name 或 HTTPS URL）'
+        required: true
+        default: 'kajimi16/hita-community-plugins'
+      ref:
+        description: '分支或 tag'
+        required: false
+        default: 'master'
+      module:
+        description: 'Gradle 模块，例如 :anime-plugin'
+        required: true
+        default: ':anime-plugin'
+      kind:
+        description: '插件类型'
+        type: choice
+        options: [ui, dex]
+        default: ui
+      plugin_id:
+        description: '插件 id（与 plugin.json 一致）'
+        required: true
+        default: 'com.stupidtree.hita.ui.anime'
+      name:
+        description: '展示名称'
+        required: true
+        default: '番剧'
+      version:
+        description: '插件版本'
+        required: true
+        default: '0.3.0'
+      entry_class:
+        description: '入口类'
+        required: true
+        default: 'com.stupidtree.hita.ui.anime.AnimeUiPlugin'
+      min_host_api:
+        description: '最低宿主 API'
+        required: true
+        default: '5'
+      description:
+        description: '简介'
+        required: false
+        default: ''
+      changelog:
+        description: '更新日志'
+        required: false
+        default: ''
+      tags:
+        description: '逗号分隔标签'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Checkout plugin source
+        if: inputs.repo != github.repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          ref: ${{ inputs.ref }}
+          path: plugin-src
+
+      - name: Build plugin
+        env:
+          MODULE: ${{ inputs.module }}
+          KIND: ${{ inputs.kind }}
+          SRC: ${{ inputs.repo != github.repository && 'plugin-src' || '.' }}
+        run: |
+          set -e
+          cd "$SRC"
+          chmod +x gradlew || true
+          if [ "$KIND" = "ui" ]; then
+            ./gradlew "$MODULE:assembleRelease" --no-daemon
+          else
+            ./gradlew "$MODULE:buildPluginDex" --no-daemon
+          fi
+
+      - name: Publish artifact and update registry
+        env:
+          KIND: ${{ inputs.kind }}
+          PLUGIN_ID: ${{ inputs.plugin_id }}
+          NAME: ${{ inputs.name }}
+          VERSION: ${{ inputs.version }}
+          ENTRY_CLASS: ${{ inputs.entry_class }}
+          MIN_HOST_API: ${{ inputs.min_host_api }}
+          DESCRIPTION: ${{ inputs.description }}
+          CHANGELOG: ${{ inputs.changelog }}
+          TAGS: ${{ inputs.tags }}
+          SRC: ${{ inputs.repo != github.repository && 'plugin-src' || '.' }}
+        run: |
+          set -e
+          if [ "$KIND" = "ui" ]; then
+            ART=$(find "$SRC" -path '*/build/outputs/apk/release/*.apk' | head -n1)
+            EXT=apk
+          else
+            ART=$(find "$SRC" -path '*/build/plugin-dex/classes.dex' | head -n1)
+            EXT=dex
+          fi
+          test -n "$ART"
+          mkdir -p dist
+          OUT="dist/${PLUGIN_ID}-${VERSION}.${EXT}"
+          cp "$ART" "$OUT"
+          SHA=$(sha256sum "$OUT" | cut -d' ' -f1)
+          SIZE=$(stat -c%s "$OUT")
+          python3 scripts/update_registry.py \
+            --kind "$KIND" --id "$PLUGIN_ID" --name "$NAME" --version "$VERSION" \
+            --url "../$OUT" --sha256 "$SHA" --size "$SIZE" \
+            --entry-class "$ENTRY_CLASS" --min-host-api "$MIN_HOST_API" \
+            --description "$DESCRIPTION" --changelog "$CHANGELOG" \
+            --repo "https://github.com/${{ inputs.repo }}" \
+            --author "${{ github.actor }}" --tags "$TAGS" \
+            --updated-at "$(date -u +%Y-%m-%d)"
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist registry/index.json
+          git commit -m "publish: ${{ inputs.plugin_id }} ${{ inputs.version }}" || echo "no changes"
+          git push
