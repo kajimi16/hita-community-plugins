@@ -136,6 +136,19 @@ class DataLayerTest {
     }
 
     @Test
+    fun imageUrlsAreUpgradedToHttps() {
+        val images = ImageSet.fromJson(
+            JSONObject(
+                """{"common":"http://lain.bgm.tv/pic/cover/c/1.jpg",
+                    "large":"https://lain.bgm.tv/pic/cover/l/1.jpg"}""",
+            ),
+        )
+        assertEquals("https://lain.bgm.tv/pic/cover/c/1.jpg", images.common)
+        assertEquals("https://lain.bgm.tv/pic/cover/l/1.jpg", images.large)
+        assertEquals("https://lain.bgm.tv/pic/cover/c/1.jpg", images.cover)
+    }
+
+    @Test
     fun hitaniBaseNormalizesTrailingSlashAndBlank() {
         assertEquals("https://ani.kajimi.cc", HitaniApi.normalizeBase("https://ani.kajimi.cc/"))
         assertEquals(HitaniApi.DEFAULT_BASE, HitaniApi.normalizeBase("   "))

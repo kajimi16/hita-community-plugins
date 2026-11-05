@@ -42,7 +42,7 @@ object CoverLoader {
     }
 
     suspend fun load(url: String?, maxWidth: Int = 720): Bitmap? {
-        val key = url?.takeIf { it.isNotBlank() } ?: return null
+        val key = url?.asHttps()?.takeIf { it.isNotBlank() } ?: return null
         memory.get(key)?.let { return it }
         return withContext(Dispatchers.IO) {
             memory.get(key)?.let { return@withContext it }

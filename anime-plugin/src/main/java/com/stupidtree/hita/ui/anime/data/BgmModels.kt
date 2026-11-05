@@ -4,6 +4,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /** Bangumi 图片集合。不同端点给的尺寸不同，统一取最合适的一张。 */
+/**
+ * BGM 的旧版 `/calendar` 返回 `http://lain.bgm.tv/...`，而 v0 返回 https。
+ * 宿主的明文策略不可控，统一升级到 https（图片站本身支持并会 301）。
+ */
+fun String?.asHttps(): String? =
+    this?.trim()?.takeIf { it.isNotEmpty() }?.replaceFirst("http://", "https://")
+
 data class ImageSet(
     val small: String? = null,
     val grid: String? = null,
@@ -21,11 +28,11 @@ data class ImageSet(
         fun fromJson(json: JSONObject?): ImageSet {
             if (json == null) return ImageSet()
             return ImageSet(
-                small = json.stringOrNull("small"),
-                grid = json.stringOrNull("grid"),
-                common = json.stringOrNull("common"),
-                medium = json.stringOrNull("medium"),
-                large = json.stringOrNull("large"),
+                small = json.stringOrNull("small").asHttps(),
+                grid = json.stringOrNull("grid").asHttps(),
+                common = json.stringOrNull("common").asHttps(),
+                medium = json.stringOrNull("medium").asHttps(),
+                large = json.stringOrNull("large").asHttps(),
             )
         }
     }

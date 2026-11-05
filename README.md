@@ -8,7 +8,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 |---|---|---|
 | 番剧 `com.stupidtree.hita.ui.anime` | 参照 Animeko Android 端的番剧客户端：首页 / 时间表 / 搜索 / 追番 / 条目详情 / 弹幕 / 评论 / 资源 | API 5+，Compose 1.6.8 |
 
-## 番剧插件 0.2.2
+## 番剧插件 0.2.3
 
 ### 能力
 
@@ -51,7 +51,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 
 | 字段 | 值 |
 |---|---|
-| version | `0.2.2` |
+| version | `0.2.3` |
 | apiVersion | `5` |
 | composeVersion | `1.6.8` |
 | capabilities | `hita.ui.mainTab` |
@@ -63,7 +63,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 ./gradlew publishAnime
 ```
 
-产物：`dist/anime-0.2.2.apk`，构建脚本会打印 sha256。
+产物：`dist/anime-0.2.3.apk`，构建脚本会打印 sha256。
 
 依赖的 `:api` / `:model` / `:component` AAR 放在 `libs/`，来自 OH-MY-HITA 发布构建。
 插件对 Compose、协程、`kotlin-stdlib` 以及 `material-icons-core` 使用 `compileOnly`，
@@ -97,6 +97,12 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 2. 实现 `ComposeUiPlugin`，在 `assets/plugin.json` 写 id/version/apiVersion/composeVersion/capabilities
 3. 在 `settings.gradle` 注册模块，把 APK 复制到 `dist/`
 4. 更新市场索引（主仓库 `market` 分支）
+
+## 0.2.3 变更
+
+- 封面加载：BGM 旧版 `/calendar` 返回 `http://lain.bgm.tv/...`，宿主的明文策略
+  不可控，导致首页/放送表封面空白。现在统一把图片地址升级为 https（加载器与
+  `ImageSet` 双保险）。
 
 ## 0.2.2 变更
 
