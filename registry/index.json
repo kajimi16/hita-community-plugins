@@ -23,14 +23,18 @@
       "name": "番剧",
       "version": "0.3.0",
       "url": "../dist/com.stupidtree.hita.ui.anime-0.3.0.apk",
-      "sha256": "5c4d3d51726698537ae857d776debacb43a7588ead90cb0b165c2de8935bebe5",
+      "sha256": "603dd41d7b894614050a10772a2b94184178bae9407b0dfb813ec3288b3716ab",
       "size": 234760,
       "minHostApi": 5,
-      "description": "",
-      "changelog": "",
-      "repo": "https://github.com/kajimi16/hita-community-plugins",
+      "description": "Bangumi 番剧客户端：课表联动、放送表、搜索、追番、条目详情、弹幕、资源",
+      "changelog": "从社区仓库迁出为独立外部仓库；CI 重新构建并更新 registry 的 repo/sha256",
+      "repo": "https://github.com/kajimi16/hita-anime-plugin",
       "author": "kajimi16",
-      "tags": [],
+      "tags": [
+        "bangumi",
+        "anime",
+        "danmaku"
+      ],
       "updatedAt": "2026-11-05",
       "entryClass": "com.stupidtree.hita.ui.anime.AnimeUiPlugin"
     }
