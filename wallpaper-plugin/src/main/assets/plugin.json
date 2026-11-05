@@ -1,0 +1,11 @@
+{
+  "id": "io.github.komarichikaa.hita.wallpaper",
+  "name": "课表壁纸与样式",
+  "version": "0.1.0",
+  "entryClass": "io.github.komarichikaa.hita.wallpaper.WallpaperPlugin",
+  "apiVersion": 6,
+  "composeVersion": "",
+  "capabilities": [
+    "hita.ui.timetableAppearance"
+  ]
+}

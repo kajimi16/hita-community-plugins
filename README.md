@@ -8,6 +8,10 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 |---|---|---|
 | 番剧 `com.stupidtree.hita.ui.anime` | 参照 Animeko Android 端的番剧客户端：首页 / 时间表 / 搜索 / 追番 / 条目详情 / 弹幕 / 评论 / 资源 | API 5+，Compose 1.6.8 |
 
+## 课表壁纸与样式
+
+[wallpaper-plugin](wallpaper-plugin/README.md) 调整原生课表壁纸、卡片透明度、背景模糊和风格预设，需要 API 6 外观服务。
+
 ## 番剧插件 0.3.0
 
 ### 能力

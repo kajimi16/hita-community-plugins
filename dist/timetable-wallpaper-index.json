@@ -1,0 +1,17 @@
+{
+  "plugins": [],
+  "uiPlugins": [
+    {
+      "id": "io.github.komarichikaa.hita.wallpaper",
+      "name": "课表壁纸与样式",
+      "version": "0.1.0",
+      "url": "timetable-wallpaper-0.1.0.apk",
+      "sha256": "85182a07a5e93a71fffebab23186ce1d4ed9442b5ecb7dda4c36fae6875fe7a6",
+      "minHostApi": 6,
+      "size": 11746,
+      "description": "原生课表壁纸、卡片不透明度、模糊与风格设置，需要 API 6 外观服务。",
+      "author": "komariChikaA",
+      "repo": "https://github.com/komariChikaA/hita-community-plugins"
+    }
+  ]
+}

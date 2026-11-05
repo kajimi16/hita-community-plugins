@@ -1,0 +1,9 @@
+plugins { id 'com.android.application'; id 'kotlin-android' }
+android { namespace 'io.github.komarichikaa.hita.wallpaper'; compileSdk 35; buildToolsVersion '35.0.0'; defaultConfig { applicationId 'io.github.komarichikaa.hita.wallpaper'; minSdkVersion 23; targetSdk 33; versionCode 1; versionName '0.1.0' }; kotlinOptions { jvmTarget = '1.8' }; compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 } }
+dependencies {
+ compileOnly project(':wallpaper-contract')
+ compileOnly files('../libs/api-release.aar', '../libs/model-release.aar', '../libs/component-release.aar')
+ compileOnly 'androidx.activity:activity:1.9.1'
+ compileOnly 'androidx.lifecycle:lifecycle-livedata-core:2.8.4'
+ compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
