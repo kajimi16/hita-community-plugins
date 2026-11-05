@@ -1,0 +1,130 @@
+name: 插件发布请求
+description: 外部插件发布请求；维护者据此运行 Publish Plugin（不要直接改 registry/dist）
+title: "Publish request: "
+labels: ["publish-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **外部作者不要直接运行 workflow。** 填完本表后由维护者在
+        `hita-community-plugins` 手动运行 **Publish Plugin**；CI 会构建、
+        写入 `dist/<id>-<version>.*` 并更新 `registry/index.json`。
+
+        请先在插件仓库完成本地构建与测试。
+
+  - type: input
+    id: repo
+    attributes:
+      label: 插件仓库
+      description: GitHub `owner/name` 或 HTTPS 地址；必须是公开仓库
+      placeholder: kajimi16/hita-anime-plugin
+    validations:
+      required: true
+
+  - type: input
+    id: ref
+    attributes:
+      label: 分支或 tag
+      value: master
+    validations:
+      required: true
+
+  - type: input
+    id: module
+    attributes:
+      label: Gradle 模块
+      description: 与仓库的 settings.gradle 一致
+      placeholder: ":anime-plugin"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 插件类型
+      options:
+        - ui
+        - dex
+    validations:
+      required: true
+
+  - type: input
+    id: plugin_id
+    attributes:
+      label: 插件 id
+      description: 界面插件必须与 assets/plugin.json 的 id 一致
+      placeholder: com.stupidtree.hita.ui.anime
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: 展示名称
+      placeholder: 番剧
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 语义化版本；必须与 plugin.json 一致
+      placeholder: 0.3.0
+    validations:
+      required: true
+
+  - type: input
+    id: entry_class
+    attributes:
+      label: 入口类
+      placeholder: com.stupidtree.hita.ui.anime.AnimeUiPlugin
+    validations:
+      required: true
+
+  - type: input
+    id: min_host_api
+    attributes:
+      label: 最低宿主 API
+      description: 界面插件填 plugin.json 的 apiVersion；逻辑插件填 requiresApi
+      placeholder: "5"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 简介
+      description: 市场详情页展示
+    validations:
+      required: false
+
+  - type: textarea
+    id: changelog
+    attributes:
+      label: 更新日志
+    validations:
+      required: false
+
+  - type: input
+    id: tags
+    attributes:
+      label: 标签
+      description: 逗号分隔
+      placeholder: bangumi,anime,danmaku
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 自查
+      options:
+        - label: 插件仓库是公开的，CI 可 checkout
+          required: true
+        - label: 本地 `assembleRelease`（ui）或 `buildPluginDex`（dex）通过
+          required: true
+        - label: plugin.json 的 id / version / entryClass / apiVersion 与上表一致
+          required: true
+        - label: 理解正式发布由维护者运行 workflow，不自行改 registry/dist
+          required: true
