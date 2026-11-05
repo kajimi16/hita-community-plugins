@@ -8,12 +8,12 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 |---|---|---|
 | 番剧 `com.stupidtree.hita.ui.anime` | 参照 Animeko Android 端的番剧客户端：首页 / 时间表 / 搜索 / 追番 / 条目详情 / 弹幕 / 评论 / 资源 | API 5+，Compose 1.6.8 |
 
-## 番剧插件 0.2.0
+## 番剧插件 0.2.1
 
 ### 能力
 
 - **首页**：今日放送、本周新番、继续追番（读取 Bangumi 在看收藏）
-- **时间表**：按周翻页；优先 hit-ani `/api/schedule`，站点不可用时回退 Bangumi
+- **放送表**：Bangumi `calendar` 的当前在播番组，按星期分组；含航海王、柯南这类长篇连载（不再按首播日期筛选）
 - **搜索**：关键词 + 类型 + 排序 + 年份/季度 + 标签组合筛选，分页加载
 - **追番**：五种收藏状态分组、进度与评分、分页
 - **条目详情**
@@ -51,7 +51,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 
 | 字段 | 值 |
 |---|---|
-| version | `0.2.0` |
+| version | `0.2.1` |
 | apiVersion | `5` |
 | composeVersion | `1.6.8` |
 | capabilities | `hita.ui.mainTab` |
@@ -63,7 +63,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 ./gradlew publishAnime
 ```
 
-产物：`dist/anime-0.2.0.apk`，构建脚本会打印 sha256。
+产物：`dist/anime-0.2.1.apk`，构建脚本会打印 sha256。
 
 依赖的 `:api` / `:model` / `:component` AAR 放在 `libs/`，来自 OH-MY-HITA 发布构建。
 插件对 Compose、协程、`kotlin-stdlib` 以及 `material-icons-core` 使用 `compileOnly`，
@@ -97,6 +97,12 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 2. 实现 `ComposeUiPlugin`，在 `assets/plugin.json` 写 id/version/apiVersion/composeVersion/capabilities
 3. 在 `settings.gradle` 注册模块，把 APK 复制到 `dist/`
 4. 更新市场索引（主仓库 `market` 分支）
+
+## 0.2.1 变更
+
+- 修正放送表逻辑：此前按 `air_date` 区间搜索，只能看到「本周首播」的番，
+  在播长篇全部消失。现改用 BGM `calendar`（当前在播），按星期铺满七天。
+- 首页「本周新番」改为「本周放送」，与放送表共用同一次 `calendar` 请求。
 
 ## 已知限制
 

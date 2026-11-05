@@ -65,48 +65,19 @@ class BgmApi(private val tokenProvider: () -> String?) {
         )
     }
 
-    /** 时间表：BGM 没有对应端点，按 `air_date` 区间检索聚合（与 Web 端同一策略）。 */
-    fun schedule(weekOffset: Int): Schedule {
-        val (start, end) = weekRange(weekOffset)
-        val body = JSONObject().apply {
-            put("keyword", "")
-            put("sort", "heat")
-            put(
-                "filter",
-                JSONObject().apply {
-                    put("type", JSONArray().put(2))
-                    put("nsfw", false)
-                    put("air_date", JSONArray().put(">=$start").put("<=$end"))
-                },
-            )
-        }
-        val text = request(
-            "/v0/search/subjects?limit=50&offset=0",
-            method = "POST",
-            body = body.toString(),
-            auth = false,
-        )
-        val root = JSONObject(text)
-        val grouped = LinkedHashMap<String, MutableList<SubjectSummary>>()
-        root.optJSONArray("data").toSummaries().forEach { subject ->
-            val date = subject.airDate ?: return@forEach
-            grouped.getOrPut(date) { mutableListOf() }.add(subject)
-        }
-        val days = grouped.entries
-            .sortedBy { it.key }
-            .map { (date, items) ->
-                ScheduleDay(
-                    date = date,
-                    items = items.sortedByDescending { it.score ?: 0.0 },
-                )
-            }
-        return Schedule(
-            weekStart = start,
-            weekEnd = end,
+    /**
+     * 放送表：用 BGM `calendar` —— 它返回的是**当前在播**的番组，
+     * 包含连载多年的长篇（如 `air_date=1999` 的航海王）。
+     *
+     * 不能用 `air_date` 区间搜索：那只回答「本周首播的番」，
+     * 已经在播的番会全部消失 —— 正是旧版时间表的错。
+     */
+    fun airingSchedule(weekOffset: Int = 0): Schedule =
+        buildAiringSchedule(
+            calendarDays = calendar(),
             weekOffset = weekOffset,
-            days = days,
+            dates = weekDates(weekOffset),
         )
-    }
 
     fun subject(id: Int): SubjectDetail =
         SubjectDetail.fromJson(JSONObject(request("/v0/subjects/$id", auth = false)))

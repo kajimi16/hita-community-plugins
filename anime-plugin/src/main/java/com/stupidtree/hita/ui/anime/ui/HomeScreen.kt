@@ -38,12 +38,14 @@ import androidx.compose.ui.unit.sp
 import com.stupidtree.hita.ui.anime.data.BgmApi
 import com.stupidtree.hita.ui.anime.data.CollectionEntry
 import com.stupidtree.hita.ui.anime.data.Prefs
+import com.stupidtree.hita.ui.anime.data.buildAiringSchedule
 import com.stupidtree.hita.ui.anime.data.Schedule
 import com.stupidtree.hita.ui.anime.data.ScheduleDay
 import com.stupidtree.hita.ui.anime.data.SubjectSummary
 import com.stupidtree.hita.ui.anime.data.formatShortDay
 import com.stupidtree.hita.ui.anime.data.todayIso
 import com.stupidtree.hita.ui.anime.data.todayWeekday
+import com.stupidtree.hita.ui.anime.data.weekDates
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -73,11 +75,9 @@ fun HomeScreen(
         runCatching {
             withContext(Dispatchers.IO) {
                 coroutineScope {
-                    val todayDeferred = async {
-                        val weekday = todayWeekday()
-                        bgm.calendar().firstOrNull { it.weekday == weekday }?.items.orEmpty()
-                    }
-                    val scheduleDeferred = async { bgm.schedule(0) }
+                    // 一次 calendar 同时供「今日放送」和「本周放送」使用，
+                    // 避免两个请求之间出现不一致。
+                    val calendarDeferred = async { bgm.calendar() }
                     val doingDeferred = async {
                         val username = prefs.bgmUsername
                         if (prefs.bgmToken.isBlank() || username.isBlank()) {
@@ -88,9 +88,14 @@ fun HomeScreen(
                             }.getOrDefault(emptyList())
                         }
                     }
+                    val calendarDays = calendarDeferred.await()
+                    val weekday = todayWeekday()
                     HomeData(
-                        today = todayDeferred.await().sortedByDescending { it.score ?: 0.0 }.take(20),
-                        schedule = scheduleDeferred.await(),
+                        today = calendarDays.firstOrNull { it.weekday == weekday }
+                            ?.items.orEmpty()
+                            .sortedByDescending { it.score ?: 0.0 }
+                            .take(20),
+                        schedule = buildAiringSchedule(calendarDays, 0, weekDates(0)),
                         doing = doingDeferred.await(),
                     )
                 }
@@ -177,7 +182,7 @@ private fun HomeContent(
             }
         }
         item {
-            SectionTitle("本周新番")
+            SectionTitle("本周放送")
         }
         item {
             DayChips(data.schedule.days, selectedDate) { selectedDate = it }

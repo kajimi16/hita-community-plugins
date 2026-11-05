@@ -1,7 +1,7 @@
 {
   "id": "com.stupidtree.hita.ui.anime",
   "name": "番剧",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entryClass": "com.stupidtree.hita.ui.anime.AnimeUiPlugin",
   "apiVersion": 5,
   "composeVersion": "1.6.8",

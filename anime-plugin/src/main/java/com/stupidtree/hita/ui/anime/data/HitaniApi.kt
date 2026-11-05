@@ -120,43 +120,6 @@ class HitaniApi(private val baseUrl: String, private val cookie: String?) {
         )
     }
 
-    fun schedule(weekOffset: Int): Schedule {
-        val root = JSONObject(request("/api/schedule?weekOffset=$weekOffset"))
-        val days = root.optJSONArray("days") ?: JSONArray()
-        return Schedule(
-            weekStart = root.stringOrNull("weekStart").orEmpty(),
-            weekEnd = root.stringOrNull("weekEnd").orEmpty(),
-            weekOffset = root.optInt("weekOffset", weekOffset),
-            days = (0 until days.length()).mapNotNull { index ->
-                val day = days.optJSONObject(index) ?: return@mapNotNull null
-                val items = day.optJSONArray("items") ?: JSONArray()
-                ScheduleDay(
-                    date = day.stringOrNull("date").orEmpty(),
-                    items = (0 until items.length()).mapNotNull { itemIndex ->
-                        val item = items.optJSONObject(itemIndex) ?: return@mapNotNull null
-                        SubjectSummary(
-                            id = item.optInt("id"),
-                            type = 2,
-                            name = item.stringOrNull("name").orEmpty(),
-                            nameCn = item.stringOrNull("nameCn"),
-                            images = ImageSet(common = item.stringOrNull("coverUrl")),
-                            score = item.doubleOrNull("score"),
-                            rank = null,
-                            airDate = day.stringOrNull("date"),
-                            tags = run {
-                                val tags = item.optJSONArray("tags") ?: return@run emptyList()
-                                (0 until tags.length()).mapNotNull { tagIndex ->
-                                    val tag = tags.optJSONObject(tagIndex) ?: return@mapNotNull null
-                                    tag.stringOrNull("name")?.let { Tag(it, tag.optInt("count", 0)) }
-                                }
-                            },
-                        )
-                    },
-                )
-            },
-        )
-    }
-
     fun danmaku(
         episodeId: Int,
         limit: Int = 500,

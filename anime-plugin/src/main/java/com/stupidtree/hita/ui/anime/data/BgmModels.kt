@@ -227,6 +227,33 @@ data class Schedule(
     val days: List<ScheduleDay>,
 )
 
+/**
+ * 把 BGM `calendar`（按星期分组的当前在播番组）铺到一周七天。
+ *
+ * 纯函数，便于单测：`calendarDays` 缺失的星期也要保留空槽，
+ * 否则界面上的「周几」会跳号。
+ */
+fun buildAiringSchedule(
+    calendarDays: List<CalendarDay>,
+    weekOffset: Int,
+    dates: List<String>,
+): Schedule {
+    val byWeekday = calendarDays.associateBy { it.weekday }
+    val days = (1..7).map { weekday ->
+        ScheduleDay(
+            date = dates.getOrElse(weekday - 1) { "" },
+            items = byWeekday[weekday]?.items.orEmpty()
+                .sortedByDescending { it.score ?: 0.0 },
+        )
+    }
+    return Schedule(
+        weekStart = dates.firstOrNull().orEmpty(),
+        weekEnd = dates.lastOrNull().orEmpty(),
+        weekOffset = weekOffset,
+        days = days,
+    )
+}
+
 /* ------------------------------------------------------------------ *
  * JSON helpers
  * ------------------------------------------------------------------ */

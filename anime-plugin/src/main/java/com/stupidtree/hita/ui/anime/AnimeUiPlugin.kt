@@ -215,7 +215,6 @@ private fun RootScreen(
                     onOpenTab = { selected = it },
                 )
                 "schedule" -> ScheduleScreen(
-                    hitani = hitani,
                     bgm = bgm,
                     onOpenSubject = onOpenSubject,
                 )

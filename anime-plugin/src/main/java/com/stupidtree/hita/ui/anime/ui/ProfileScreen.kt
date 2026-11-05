@@ -279,7 +279,7 @@ fun ProfileScreen(prefs: Prefs, bgm: BgmApi, hitani: HitaniApi) {
                 }
                 Divider(Modifier.padding(vertical = 10.dp))
                 Text(
-                    "番剧插件 0.2.0 · API 5 · Compose 1.6.8",
+                    "番剧插件 0.2.1 · API 5 · Compose 1.6.8",
                     fontSize = 11.sp,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.45f),
                 )
