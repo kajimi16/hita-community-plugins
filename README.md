@@ -79,7 +79,7 @@ dist/                    构建产物，按 id-version 命名
 registry/index.json      中央索引
 scripts/update_registry.py
 .github/workflows/publish-plugin.yml
-libs/                    API 5 契约 AAR
+libs/                    API 6 契约 AAR
 ```
 
 ## 安全与限制
