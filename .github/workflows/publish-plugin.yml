@@ -1,6 +1,6 @@
 name: Publish Plugin
 
-# 作者提交仓库地址与模块，CI 构建插件、计算 sha256、写入 dist/ 与中央索引。
+# 作者提交仓库地址与模块；build job 只读构建，publish job 才持有写权限。
 # 目标仓库需与 hita-plugin-template 结构一致（自带 gradlew 与 libs）。
 on:
   workflow_dispatch:
@@ -55,33 +55,45 @@ on:
         required: false
         default: ''
 
-permissions:
-  contents: write
-
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
+      - name: Normalize repository
+        id: meta
+        run: |
+          REPO="${{ inputs.repo }}"
+          REPO="${REPO#https://github.com/}"
+          REPO="${REPO#http://github.com/}"
+          REPO="${REPO%.git}"
+          echo "slug=$REPO" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
+        if: steps.meta.outputs.slug == github.repository
+        with:
+          persist-credentials: false
+
+      - name: Checkout external plugin source
+        if: steps.meta.outputs.slug != github.repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.meta.outputs.slug }}
+          ref: ${{ inputs.ref }}
+          path: plugin-src
+          persist-credentials: false
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Checkout plugin source
-        if: inputs.repo != github.repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.repo }}
-          ref: ${{ inputs.ref }}
-          path: plugin-src
-
       - name: Build plugin
         env:
           MODULE: ${{ inputs.module }}
           KIND: ${{ inputs.kind }}
-          SRC: ${{ inputs.repo != github.repository && 'plugin-src' || '.' }}
+          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || '.' }}
         run: |
           set -e
           cd "$SRC"
@@ -91,6 +103,41 @@ jobs:
           else
             ./gradlew "$MODULE:buildPluginDex" --no-daemon
           fi
+
+      - name: Stage artifact
+        env:
+          KIND: ${{ inputs.kind }}
+          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || '.' }}
+        run: |
+          set -e
+          if [ "$KIND" = "ui" ]; then
+            ART=$(find "$SRC" -path '*/build/outputs/apk/release/*.apk' | head -n1)
+            EXT=apk
+          else
+            ART=$(find "$SRC" -path '*/build/plugin-dex/classes.dex' | head -n1)
+            EXT=dex
+          fi
+          test -n "$ART"
+          mkdir -p artifact
+          cp "$ART" "artifact/plugin.$EXT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugin-artifact
+          path: artifact/plugin.*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: plugin-artifact
+          path: artifact
 
       - name: Publish artifact and update registry
         env:
@@ -103,20 +150,36 @@ jobs:
           DESCRIPTION: ${{ inputs.description }}
           CHANGELOG: ${{ inputs.changelog }}
           TAGS: ${{ inputs.tags }}
-          SRC: ${{ inputs.repo != github.repository && 'plugin-src' || '.' }}
         run: |
           set -e
+          EXT=$([ "$KIND" = "ui" ] && echo apk || echo dex)
+          SRC="artifact/plugin.$EXT"
+          test -f "$SRC"
           if [ "$KIND" = "ui" ]; then
-            ART=$(find "$SRC" -path '*/build/outputs/apk/release/*.apk' | head -n1)
-            EXT=apk
-          else
-            ART=$(find "$SRC" -path '*/build/plugin-dex/classes.dex' | head -n1)
-            EXT=dex
+            unzip -p "$SRC" assets/plugin.json > /tmp/plugin-meta.json
+            PLUGIN_ID="$PLUGIN_ID" VERSION="$VERSION" ENTRY_CLASS="$ENTRY_CLASS"               MIN_HOST_API="$MIN_HOST_API" python3 - <<'PY'
+          import json, os
+          m = json.load(open("/tmp/plugin-meta.json"))
+          expected = {
+              "id": os.environ["PLUGIN_ID"],
+              "version": os.environ["VERSION"],
+              "entryClass": os.environ["ENTRY_CLASS"],
+          }
+          errors = [f"{k}: {m.get(k)!r} != {v!r}" for k, v in expected.items() if m.get(k) != v]
+          if m.get("apiVersion") != int(os.environ["MIN_HOST_API"]):
+              errors.append(f"apiVersion: {m.get('apiVersion')!r} != {os.environ['MIN_HOST_API']!r}")
+          if errors:
+              raise SystemExit("plugin.json mismatch: " + "; ".join(errors))
+          print("plugin.json verified")
+          PY
           fi
-          test -n "$ART"
+          REPO_SLUG="${{ inputs.repo }}"
+          REPO_SLUG="${REPO_SLUG#https://github.com/}"
+          REPO_SLUG="${REPO_SLUG#http://github.com/}"
+          REPO_SLUG="${REPO_SLUG%.git}"
           mkdir -p dist
           OUT="dist/${PLUGIN_ID}-${VERSION}.${EXT}"
-          cp "$ART" "$OUT"
+          cp "$SRC" "$OUT"
           SHA=$(sha256sum "$OUT" | cut -d' ' -f1)
           SIZE=$(stat -c%s "$OUT")
           python3 scripts/update_registry.py \
@@ -124,7 +187,7 @@ jobs:
             --url "../$OUT" --sha256 "$SHA" --size "$SIZE" \
             --entry-class "$ENTRY_CLASS" --min-host-api "$MIN_HOST_API" \
             --description "$DESCRIPTION" --changelog "$CHANGELOG" \
-            --repo "https://github.com/${{ inputs.repo }}" \
+            --repo "https://github.com/${REPO_SLUG}" \
             --author "${{ github.actor }}" --tags "$TAGS" \
             --updated-at "$(date -u +%Y-%m-%d)"
 

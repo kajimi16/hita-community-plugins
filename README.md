@@ -172,3 +172,10 @@ MIT
 产物当前托管在仓库 `dist/`（经 raw 下载）；后续可把同一步换成 S3/对象存储，只要索引里的 `url` 指向最终地址。
 
 索引相对地址以 `registry/index.json` 为基准，`../dist/...` 会解析到仓库 `dist/`。
+
+发布工作流的安全与校验：
+
+- `build` job 只读，目标仓库以 `persist-credentials: false` checkout，Gradle 脚本拿不到写 token
+- `publish` job 才持有 `contents: write`，从 artifact 读取构建产物
+- 界面插件会解压校验 `assets/plugin.json` 的 id / version / entryClass / apiVersion 与表单一致
+- `repo` 输入支持 `owner/name` 或 GitHub HTTPS 地址，工作流会归一化
