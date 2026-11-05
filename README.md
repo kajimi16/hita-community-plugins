@@ -8,7 +8,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 |---|---|---|
 | 番剧 `com.stupidtree.hita.ui.anime` | 参照 Animeko Android 端的番剧客户端：首页 / 时间表 / 搜索 / 追番 / 条目详情 / 弹幕 / 评论 / 资源 | API 5+，Compose 1.6.8 |
 
-## 番剧插件 0.2.3
+## 番剧插件 0.3.0
 
 ### 能力
 
@@ -38,6 +38,23 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 | 多源资源选择 | ✅ 资源索引（外站链接） |
 | 播放器 / BT / 离线缓存 | ❌ 插件不声明 Activity，也不携带原生播放内核 |
 
+### 缓存服务器与离线回退
+
+插件按顺序尝试配置的地址（「我的 → 站点地址」，逗号分隔）：
+
+1. 数据：`{base}/api/bgm/calendar`、`/api/bgm/v0/subjects/{id}`、`/api/bgm/v0/episodes` 等
+   —— 由 hit-ani 落库缓存（周历 6h、条目/章节 24h、上游失败回退 3 天内旧数据）
+2. 封面：`{base}/_next/image?url=...&w=384/640/1080&q=85`
+3. 全部失败才直连 `https://api.bgm.tv` 与 `lain.bgm.tv`
+
+收藏、进度、令牌校验始终直连 BGM（需要用户自己的身份）。代理是只读白名单，
+`v0/me` 与收藏写接口不可达。
+
+### 课表联动
+
+插件通过宿主 `TimetableService` 读取今日课程，在首页与「今日放送」并列展示；
+课程点击交给 `TimetableUiService` 打开宿主课表页。课表插件未启用时该区块自动隐藏。
+
 ### 账号与数据
 
 - **Bangumi**：填入个人访问令牌（scope 至少 `write:collection`）。
@@ -51,7 +68,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 
 | 字段 | 值 |
 |---|---|
-| version | `0.2.3` |
+| version | `0.3.0` |
 | apiVersion | `5` |
 | composeVersion | `1.6.8` |
 | capabilities | `hita.ui.mainTab` |
@@ -63,7 +80,7 @@ OH-MY-HITA 的社区插件仓库。这里的插件不随宿主 App 发版，通�
 ./gradlew publishAnime
 ```
 
-产物：`dist/anime-0.2.3.apk`，构建脚本会打印 sha256。
+产物：`dist/anime-0.3.0.apk`，构建脚本会打印 sha256。
 
 依赖的 `:api` / `:model` / `:component` AAR 放在 `libs/`，来自 OH-MY-HITA 发布构建。
 插件对 Compose、协程、`kotlin-stdlib` 以及 `material-icons-core` 使用 `compileOnly`，
@@ -97,6 +114,17 @@ adb shell run-as io.github.kajimi16.ohmyhita cp /data/local/tmp/anime.apk \
 2. 实现 `ComposeUiPlugin`，在 `assets/plugin.json` 写 id/version/apiVersion/composeVersion/capabilities
 3. 在 `settings.gradle` 注册模块，把 APK 复制到 `dist/`
 4. 更新市场索引（主仓库 `market` 分支）
+
+## 0.3.0 变更
+
+- **课表联动**：首页新增「今日课表」，读取宿主 `TimetableService.getTodayEventsSync()`，
+  显示上课时间/地点/教师，当前正在上的课标「上课中」；点击打开课表详情。
+- **校内/国内缓存回退**：数据优先走 hit-ani `/api/bgm/*`（服务端落库缓存），
+  封面走 `/_next/image`；服务器不可达时自动直连 BGM。站点地址支持逗号分隔多个，
+  按顺序尝试。
+- **封面清晰度**：按实际显示尺寸取图（320/640/1080 分档），改用 `ARGB_8888` 解码，
+  网格/首页使用 `large` 原图，不再把 400px 图拉到 540px；缓存按尺寸分档。
+- 需要部署新版 hit-ani 才会有 `/api/bgm` 代理；未部署时插件自动直连，不回归。
 
 ## 0.2.3 变更
 

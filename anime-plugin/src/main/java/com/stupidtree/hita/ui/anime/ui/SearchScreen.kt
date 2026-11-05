@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.Prefs
 import com.stupidtree.hita.ui.anime.data.SearchFilter
 import com.stupidtree.hita.ui.anime.data.SubjectSummary
@@ -67,7 +67,7 @@ private val tagOptions = listOf(
 @Composable
 fun SearchScreen(
     prefs: Prefs,
-    bgm: BgmApi,
+    bgm: BgmSource,
     onOpenSubject: (Int, String?) -> Unit,
 ) {
     var input by remember { mutableStateOf("") }

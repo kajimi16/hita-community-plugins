@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.Schedule
 import com.stupidtree.hita.ui.anime.data.formatShortDay
 import com.stupidtree.hita.ui.anime.data.todayIso
@@ -40,7 +40,7 @@ import kotlinx.coroutines.withContext
  */
 @Composable
 fun ScheduleScreen(
-    bgm: BgmApi,
+    bgm: BgmSource,
     onOpenSubject: (Int, String?) -> Unit,
 ) {
     var schedule by remember { mutableStateOf<Schedule?>(null) }

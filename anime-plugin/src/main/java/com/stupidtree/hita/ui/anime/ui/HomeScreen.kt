@@ -35,7 +35,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.api.TimetableService
+import com.stupidtree.hitax.data.model.timetable.EventItem
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.CollectionEntry
 import com.stupidtree.hita.ui.anime.data.Prefs
 import com.stupidtree.hita.ui.anime.data.buildAiringSchedule
@@ -50,17 +52,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 private data class HomeData(
     val today: List<SubjectSummary>,
     val schedule: Schedule,
     val doing: List<CollectionEntry>,
+    val todayEvents: List<EventItem>,
 )
 
 @Composable
 fun HomeScreen(
     prefs: Prefs,
-    bgm: BgmApi,
+    bgm: BgmSource,
+    timetable: TimetableService?,
+    onOpenClass: (EventItem) -> Unit,
     onOpenSubject: (Int, String?) -> Unit,
     onOpenTab: (String) -> Unit,
 ) {
@@ -88,6 +95,10 @@ fun HomeScreen(
                             }.getOrDefault(emptyList())
                         }
                     }
+                    val eventsDeferred = async {
+                        runCatching { timetable?.getTodayEventsSync().orEmpty() }
+                            .getOrDefault(emptyList())
+                    }
                     val calendarDays = calendarDeferred.await()
                     val weekday = todayWeekday()
                     HomeData(
@@ -97,6 +108,7 @@ fun HomeScreen(
                             .take(20),
                         schedule = buildAiringSchedule(calendarDays, 0, weekDates(0)),
                         doing = doingDeferred.await(),
+                        todayEvents = eventsDeferred.await(),
                     )
                 }
             }
@@ -117,7 +129,7 @@ fun HomeScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    "Bangumi × 校内弹幕",
+                    "课表 × Bangumi × 校内弹幕",
                     fontSize = 12.sp,
                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.55f),
                 )
@@ -133,6 +145,8 @@ fun HomeScreen(
             data != null -> HomeContent(
                 data = data!!,
                 prefs = prefs,
+                timetableAvailable = timetable != null,
+                onOpenClass = onOpenClass,
                 onOpenSubject = onOpenSubject,
                 onOpenTab = onOpenTab,
             )
@@ -145,6 +159,8 @@ fun HomeScreen(
 private fun HomeContent(
     data: HomeData,
     prefs: Prefs,
+    timetableAvailable: Boolean,
+    onOpenClass: (EventItem) -> Unit,
     onOpenSubject: (Int, String?) -> Unit,
     onOpenTab: (String) -> Unit,
 ) {
@@ -154,6 +170,9 @@ private fun HomeContent(
     }
 
     LazyColumn(Modifier.fillMaxSize()) {
+        if (timetableAvailable) {
+            item { TimetableSection(data.todayEvents, onOpenClass) }
+        }
         item {
             TodayHero(data.today, onOpenSubject)
         }
@@ -202,6 +221,78 @@ private fun HomeContent(
 }
 
 @Composable
+private fun TimetableSection(events: List<EventItem>, onOpen: (EventItem) -> Unit) {
+    val now = System.currentTimeMillis()
+    val sorted = events.sortedBy { it.from.time }
+    Column(Modifier.fillMaxWidth()) {
+    SectionTitle("今日课表", trailing = "${sorted.size} 节")
+    if (sorted.isEmpty()) {
+        Text(
+            "今天没有课，安心补番。",
+            fontSize = 12.sp,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.55f),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+    } else {
+        sorted.take(6).forEach { event ->
+            val inClass = now >= event.from.time && now < event.to.time
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpen(event) }
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    timeRange(event),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.55f),
+                    modifier = Modifier.width(84.dp),
+                )
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        event.name,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    val place = listOfNotNull(
+                        event.place?.takeIf { it.isNotBlank() },
+                        event.teacher?.takeIf { it.isNotBlank() },
+                    ).joinToString(" · ")
+                    if (place.isNotBlank()) {
+                        Text(
+                            place,
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                if (inClass) TagPill("上课中", selected = true)
+            }
+        }
+        if (sorted.size > 6) {
+            Text(
+                "还有 ${sorted.size - 6} 节",
+                fontSize = 11.sp,
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.45f),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
+            )
+        }
+    }
+    Spacer(Modifier.height(4.dp))
+    }
+}
+
+private val classTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+private fun timeRange(event: EventItem): String =
+    "${classTimeFormat.format(event.from)}-${classTimeFormat.format(event.to)}"
+
+@Composable
 private fun TodayHero(items: List<SubjectSummary>, onOpenSubject: (Int, String?) -> Unit) {
     if (items.isEmpty()) {
         EmptyState("今日没有放送")
@@ -222,7 +313,7 @@ private fun TodayHero(items: List<SubjectSummary>, onOpenSubject: (Int, String?)
                 ) {
                     Box {
                         AsyncCover(
-                            subject.images.common ?: subject.images.cover,
+                            subject.images.hero ?: subject.images.cover,
                             Modifier.size(width = 112.dp, height = 156.dp),
                         )
                         ScorePill(
@@ -256,7 +347,7 @@ private fun DoingCard(entry: CollectionEntry, onClick: () -> Unit) {
             .clickable(onClick = onClick),
     ) {
         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            AsyncCover(subject?.images?.grid ?: subject?.images?.cover, Modifier.size(52.dp, 72.dp))
+            AsyncCover(subject?.images?.common ?: subject?.images?.cover, Modifier.size(52.dp, 72.dp))
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(

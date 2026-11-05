@@ -68,6 +68,14 @@ class Prefs(context: Context) {
             sp.edit().putString(KEY_SEARCH_HISTORY, JSONArray(trimmed).toString()).apply()
         }
 
+    /** 缓存/站点地址（逗号或换行分隔，按顺序尝试）。 */
+    fun bases(): List<String> = hitaniBase
+        .split(',', '\n')
+        .map { it.trim().trimEnd('/') }
+        .filter { it.startsWith("http://") || it.startsWith("https://") }
+        .distinct()
+        .ifEmpty { listOf(HitaniApi.DEFAULT_BASE) }
+
     fun rememberSearch(keyword: String) {
         val value = keyword.trim()
         if (value.isBlank()) return

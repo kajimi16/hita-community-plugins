@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.CharacterItem
 import com.stupidtree.hita.ui.anime.data.DanmakuItem
 import com.stupidtree.hita.ui.anime.data.EpisodeItem
@@ -89,7 +89,7 @@ private val collectionOptions = listOf(
 fun SubjectScreen(
     context: Context,
     prefs: Prefs,
-    bgm: BgmApi,
+    bgm: BgmSource,
     hitani: HitaniApi,
     subjectId: Int,
     initialTitle: String?,
@@ -506,7 +506,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.charactersTab(
                     Modifier.width(92.dp).clickable { onOpen(character) },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    AsyncCover(character.images.grid ?: character.images.cover, Modifier.size(82.dp), radius = 41.dp)
+                    AsyncCover(character.images.medium ?: character.images.common ?: character.images.cover, Modifier.size(82.dp), radius = 41.dp)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         character.name,
@@ -604,7 +604,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.relatedTab(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AsyncCover(subject.images.grid ?: subject.images.cover, Modifier.size(52.dp, 72.dp))
+            AsyncCover(subject.images.medium ?: subject.images.common ?: subject.images.cover, Modifier.size(52.dp, 72.dp))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(

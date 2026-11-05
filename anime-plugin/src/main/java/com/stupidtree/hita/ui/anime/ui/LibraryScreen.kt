@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.CollectionEntry
 import com.stupidtree.hita.ui.anime.data.Prefs
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +49,7 @@ private val statusOptions = listOf(
 @Composable
 fun LibraryScreen(
     prefs: Prefs,
-    bgm: BgmApi,
+    bgm: BgmSource,
     onOpenSubject: (Int, String?) -> Unit,
     onOpenProfile: () -> Unit,
 ) {
@@ -221,7 +221,7 @@ private fun CollectionRow(entry: CollectionEntry, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncCover(subject?.images?.grid ?: subject?.images?.cover, Modifier.width(62.dp).height(84.dp))
+        AsyncCover(subject?.images?.common ?: subject?.images?.cover, Modifier.width(62.dp).height(84.dp))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(

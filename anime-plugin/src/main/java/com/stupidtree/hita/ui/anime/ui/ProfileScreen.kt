@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.CoverLoader
 import com.stupidtree.hita.ui.anime.data.HitaniApi
 import com.stupidtree.hita.ui.anime.data.Prefs
@@ -41,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ProfileScreen(prefs: Prefs, bgm: BgmApi, hitani: HitaniApi) {
+fun ProfileScreen(prefs: Prefs, bgm: BgmSource, hitani: HitaniApi) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -135,7 +136,7 @@ fun ProfileScreen(prefs: Prefs, bgm: BgmApi, hitani: HitaniApi) {
                             scope.launch {
                                 runCatching {
                                     withContext(Dispatchers.IO) {
-                                        BgmApi { tokenInput.trim() }.me()
+                                        BgmApi(tokenProvider = { tokenInput.trim() }).me()
                                     }
                                 }.onSuccess {
                                     prefs.bgmToken = tokenInput.trim()
@@ -246,7 +247,12 @@ fun ProfileScreen(prefs: Prefs, bgm: BgmApi, hitani: HitaniApi) {
                     onValueChange = { baseInput = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text("https://ani.kajimi.cc", fontSize = 12.sp) },
+                    label = { Text("站点/缓存地址（可逗号分隔）", fontSize = 12.sp) },
+                )
+                Text(
+                    "按顺序尝试；第一个地址用于站点登录。例如：https://ani.kajimi.cc,http://10.249.61.10:3100",
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.45f),
                 )
                 TextButton(onClick = {
                     prefs.hitaniBase = baseInput
@@ -279,7 +285,7 @@ fun ProfileScreen(prefs: Prefs, bgm: BgmApi, hitani: HitaniApi) {
                 }
                 Divider(Modifier.padding(vertical = 10.dp))
                 Text(
-                    "番剧插件 0.2.3 · API 5 · Compose 1.6.8",
+                    "番剧插件 0.3.0 · API 5 · Compose 1.6.8",
                     fontSize = 11.sp,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.45f),
                 )

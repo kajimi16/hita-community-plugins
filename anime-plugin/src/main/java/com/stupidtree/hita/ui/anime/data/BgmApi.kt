@@ -14,7 +14,12 @@ class BgmException(val status: Int, message: String) : Exception(message)
  * 只依赖 `HttpURLConnection` + `org.json`：插件是 dex，不能携带额外的网络/序列化库，
  * 也不应把宿主的依赖当作可用的公共 API。
  */
-class BgmApi(private val tokenProvider: () -> String?) {
+class BgmApi(
+    private val tokenProvider: () -> String?,
+    private val baseUrl: String = BASE,
+    private val connectTimeoutMs: Int = 15_000,
+    private val readTimeoutMs: Int = 25_000,
+) {
 
     fun calendar(): List<CalendarDay> {
         val array = JSONArray(request("/calendar", auth = false))
@@ -273,12 +278,12 @@ class BgmApi(private val tokenProvider: () -> String?) {
         auth: Boolean = true,
         allowNotFound: Boolean = false,
     ): String {
-        val url = if (path.startsWith("http")) path else BASE + path
+        val url = if (path.startsWith("http")) path else baseUrl.trimEnd('/') + path
         val conn = URL(url).openConnection() as HttpURLConnection
         try {
             conn.requestMethod = method
-            conn.connectTimeout = 15_000
-            conn.readTimeout = 25_000
+            conn.connectTimeout = connectTimeoutMs
+            conn.readTimeout = readTimeoutMs
             conn.instanceFollowRedirects = true
             conn.setRequestProperty("User-Agent", USER_AGENT)
             conn.setRequestProperty("Accept", "application/json")

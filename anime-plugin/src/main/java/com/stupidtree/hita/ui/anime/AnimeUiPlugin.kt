@@ -39,7 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.stupidtree.hita.api.ComposeUiPlugin
 import com.stupidtree.hita.api.PluginUiHost
+import com.stupidtree.hita.api.TimetableService
+import com.stupidtree.hita.api.TimetableUiService
 import com.stupidtree.hita.ui.anime.data.BgmApi
+import com.stupidtree.hita.ui.anime.data.BgmSource
 import com.stupidtree.hita.ui.anime.data.CoverLoader
 import com.stupidtree.hita.ui.anime.data.EpisodeItem
 import com.stupidtree.hita.ui.anime.data.HitaniApi
@@ -71,11 +74,19 @@ class AnimeUiPlugin : ComposeUiPlugin {
     override fun createView(context: Context, host: PluginUiHost): View {
         CoverLoader.init(context)
         val backDispatcher = BackDispatcher()
+        val timetable = host.service(TimetableService.KEY)
+        val timetableUi = host.service(TimetableUiService.KEY)
         val composeView = ComposeView(context).apply {
             setContent {
                 AnimeTheme(dark = isSystemInDarkTheme()) {
                     val initialSubjectId = host.arguments.getInt("subjectId", 0)
-                    AnimeApp(context, initialSubjectId, backDispatcher)
+                    AnimeApp(
+                        context = context,
+                        initialSubjectId = initialSubjectId,
+                        backDispatcher = backDispatcher,
+                        timetable = timetable,
+                        timetableUi = timetableUi,
+                    )
                 }
             }
         }
@@ -153,12 +164,19 @@ private fun AnimeApp(
     context: Context,
     initialSubjectId: Int,
     backDispatcher: BackDispatcher,
+    timetable: TimetableService?,
+    timetableUi: TimetableUiService?,
 ) {
     val prefs = remember { Prefs(context) }
-    val bgm = remember(prefs.bgmToken) { BgmApi { prefs.bgmToken } }
-    val hitani = remember(prefs.hitaniBase, prefs.hitaniCookie) {
-        HitaniApi(prefs.hitaniBase, prefs.hitaniCookie)
+    val bgmDirect = remember(prefs.bgmToken) { BgmApi(tokenProvider = { prefs.bgmToken }) }
+    val bgm = remember(prefs.bgmToken, prefs.hitaniBase) {
+        BgmSource(bgmDirect, prefs.bases())
     }
+    val hitani = remember(prefs.hitaniBase, prefs.hitaniCookie) {
+        HitaniApi(prefs.bases().first(), prefs.hitaniCookie)
+    }
+
+    SideEffect { CoverLoader.configure(prefs.bases()) }
 
     var stack by remember {
         mutableStateOf<List<Screen>>(
@@ -186,9 +204,12 @@ private fun AnimeApp(
 
     when (val top = stack.last()) {
         is Screen.Root -> RootScreen(
+            context = context,
             prefs = prefs,
             bgm = bgm,
             hitani = hitani,
+            timetable = timetable,
+            timetableUi = timetableUi,
             onOpenSubject = { id, title ->
                 stack = stack + Screen.Subject(id, title)
             },
@@ -223,9 +244,12 @@ private fun AnimeApp(
 
 @Composable
 private fun RootScreen(
+    context: Context,
     prefs: Prefs,
-    bgm: BgmApi,
+    bgm: BgmSource,
     hitani: HitaniApi,
+    timetable: TimetableService?,
+    timetableUi: TimetableUiService?,
     onOpenSubject: (Int, String?) -> Unit,
 ) {
     var selected by rememberSaveable { mutableStateOf("home") }
@@ -275,6 +299,15 @@ private fun RootScreen(
                 "home" -> HomeScreen(
                     prefs = prefs,
                     bgm = bgm,
+                    timetable = timetable,
+                    onOpenClass = { event ->
+                        when {
+                            event.subjectId.isNotBlank() ->
+                                timetableUi?.openSubject(context, event.subjectId)
+                            event.timetableId.isNotBlank() ->
+                                timetableUi?.openDetail(context, event.timetableId)
+                        }
+                    },
                     onOpenSubject = onOpenSubject,
                     onOpenTab = { selected = it },
                 )

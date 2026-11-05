@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -58,21 +60,24 @@ fun AsyncCover(
     radius: Dp = 10.dp,
     contentScale: ContentScale = ContentScale.Crop,
 ) {
-    var bitmap by remember(url) { mutableStateOf<Bitmap?>(null) }
-    LaunchedEffect(url) {
-        bitmap = CoverLoader.load(url, maxWidth = 480)
-    }
     val placeholder = Brush.verticalGradient(
         listOf(
             MaterialTheme.colors.primary.copy(alpha = 0.22f),
             MaterialTheme.colors.secondary.copy(alpha = 0.18f),
         ),
     )
-    Box(
+    BoxWithConstraints(
         modifier
             .clip(RoundedCornerShape(radius))
             .background(placeholder),
     ) {
+        // 按实际显示尺寸取图，避免「400px 封面拉到 540px」的糊图。
+        val density = LocalDensity.current
+        val targetPx = with(density) { maxWidth.toPx().toInt() }.coerceIn(160, 1200)
+        var bitmap by remember(url, targetPx) { mutableStateOf<Bitmap?>(null) }
+        LaunchedEffect(url, targetPx) {
+            bitmap = CoverLoader.load(url, maxWidth = targetPx)
+        }
         val loaded = bitmap
         if (loaded != null) {
             Image(
@@ -272,7 +277,7 @@ fun SubjectRow(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncCover(subject.images.grid ?: subject.images.cover, Modifier.size(width = 62.dp, height = 84.dp))
+        AsyncCover(subject.images.common ?: subject.images.cover, Modifier.size(width = 62.dp, height = 84.dp))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
@@ -317,7 +322,7 @@ fun SubjectGridCard(subject: SubjectSummary, onClick: () -> Unit) {
             .padding(6.dp),
     ) {
         AsyncCover(
-            subject.images.common ?: subject.images.cover,
+            subject.images.hero ?: subject.images.cover,
             Modifier
                 .fillMaxWidth()
                 .height(196.dp),
