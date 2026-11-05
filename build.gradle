@@ -1,0 +1,38 @@
+buildscript {
+    ext {
+        kotlin_version = '1.9.22'
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions { jvmTarget = "1.8" }
+    }
+}
+
+def sha256 = { File f ->
+    java.security.MessageDigest.getInstance('SHA-256').digest(f.bytes).encodeHex().toString()
+}
+
+tasks.register('publishAnime') {
+    dependsOn ':anime-plugin:assembleRelease'
+    group = 'plugin'
+    description = '构建番剧界面插件并复制到 dist/'
+    doLast {
+        def module = project(':anime-plugin')
+        def apk = module.layout.buildDirectory.file(
+            'outputs/apk/release/anime-plugin-release-unsigned.apk').get().asFile
+        def out = rootProject.file('dist/anime-0.1.0.apk')
+        out.parentFile.mkdirs()
+        out.bytes = apk.bytes
+        println "dist/anime-0.1.0.apk sha256=${sha256(out)}"
+    }
+}

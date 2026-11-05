@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.stupidtree.hita.ui.anime'
+    defaultConfig {
+        applicationId "com.stupidtree.hita.ui.anime"
+        minSdkVersion 23
+        targetSdk 33
+        compileSdk 35
+        versionCode 1
+        versionName "0.1.0"
+    }
+    buildFeatures { compose = true }
+    composeOptions { kotlinCompilerExtensionVersion '1.5.8' }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions { jvmTarget = '1.8' }
+}
+
+// 宿主提供 api / Compose / 协程运行时；插件只编译，不打包。
+dependencies {
+    compileOnly files('../libs/api-release.aar', '../libs/model-release.aar', '../libs/component-release.aar')
+    compileOnly "androidx.compose.runtime:runtime:1.6.8"
+    compileOnly "androidx.compose.ui:ui:1.6.8"
+    compileOnly "androidx.compose.foundation:foundation:1.6.8"
+    compileOnly "androidx.compose.material:material:1.6.8"
+    compileOnly "androidx.activity:activity-compose:1.9.1"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
