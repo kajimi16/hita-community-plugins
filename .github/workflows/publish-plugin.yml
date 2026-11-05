@@ -70,9 +70,10 @@ jobs:
           REPO="${REPO%.git}"
           echo "slug=$REPO" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
-        if: steps.meta.outputs.slug == github.repository
+      - name: Checkout registry
+        uses: actions/checkout@v4
         with:
+          path: registry-src
           persist-credentials: false
 
       - name: Checkout external plugin source
@@ -84,6 +85,12 @@ jobs:
           path: plugin-src
           persist-credentials: false
 
+      - name: Refresh contract libs
+        if: steps.meta.outputs.slug != github.repository
+        run: |
+          mkdir -p plugin-src/libs
+          cp registry-src/libs/*.aar plugin-src/libs/
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -93,7 +100,7 @@ jobs:
         env:
           MODULE: ${{ inputs.module }}
           KIND: ${{ inputs.kind }}
-          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || '.' }}
+          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || 'registry-src' }}
         run: |
           set -e
           cd "$SRC"
@@ -107,7 +114,7 @@ jobs:
       - name: Stage artifact
         env:
           KIND: ${{ inputs.kind }}
-          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || '.' }}
+          SRC: ${{ steps.meta.outputs.slug != github.repository && 'plugin-src' || 'registry-src' }}
         run: |
           set -e
           if [ "$KIND" = "ui" ]; then
