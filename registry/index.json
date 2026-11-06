@@ -178,6 +178,9 @@
           "id": "com.stupidtree.hita.ui.news",
           "kind": "ui"
         }
+      ],
+      "migration": [
+        "timetable.ics"
       ]
     }
   ]
