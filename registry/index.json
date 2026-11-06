@@ -327,7 +327,8 @@
           "id": "com.stupidtree.hita.theta",
           "kind": "builtin"
         }
-      ]
+      ],
+      "repo": "https://github.com/LiPu-jpg/HITA_L"
     },
     {
       "id": "hita-android-3.1.2",
@@ -418,7 +419,8 @@
       ],
       "migration": [
         "timetable.ics"
-      ]
+      ],
+      "repo": "https://github.com/HIT-A/HITA_Android"
     }
   ]
 }
