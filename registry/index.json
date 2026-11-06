@@ -173,6 +173,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.training",
+      "name": "培养方案",
+      "version": "0.1.0",
+      "url": "../dist/hita-training-0.1.0.apk",
+      "sha256": "4ef7f77e663206a84e56078e010b203895b331e7ac4c336382c4763043a3f26c",
+      "size": 616761,
+      "minHostApi": 7,
+      "description": "深圳教务培养方案与完成度",
+      "author": "kajimi16",
+      "tags": [
+        "培养方案",
+        "学分"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -260,6 +277,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.score",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.training",
           "kind": "ui"
         }
       ],
