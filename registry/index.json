@@ -88,6 +88,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.news",
+      "name": "资讯",
+      "version": "0.1.0",
+      "url": "../dist/hita-news-0.1.0.apk",
+      "sha256": "deb46c725049569a40862b824fe128a888bce2e2db39301e93f8c99ff8d002bb",
+      "size": 621849,
+      "minHostApi": 7,
+      "description": "HOA 博客资讯",
+      "author": "kajimi16",
+      "tags": [
+        "资讯",
+        "HOA"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -155,6 +172,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.appearance",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.news",
           "kind": "ui"
         }
       ]
