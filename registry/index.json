@@ -241,6 +241,22 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.update",
+      "name": "应用更新",
+      "version": "0.1.0",
+      "url": "../dist/hita-update-0.1.0.apk",
+      "sha256": "7395a60498e9695a770f0203f3e0e625a1366d231e3c37ac648d4aa6cd26e781",
+      "size": 616437,
+      "minHostApi": 7,
+      "description": "GitHub Release 更新检查",
+      "author": "kajimi16",
+      "tags": [
+        "更新"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -344,6 +360,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.live",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.update",
           "kind": "ui"
         }
       ],
