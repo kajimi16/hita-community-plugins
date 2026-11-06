@@ -156,6 +156,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.score",
+      "name": "成绩分析",
+      "version": "0.1.0",
+      "url": "../dist/hita-score-0.1.0.apk",
+      "sha256": "8110d8dfda787dec9dc8a6917603ee926391597a387fd7126fe1e79b432a167e",
+      "size": 615481,
+      "minHostApi": 7,
+      "description": "GPA、排名与成绩明细",
+      "author": "kajimi16",
+      "tags": [
+        "成绩",
+        "GPA"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -239,6 +256,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.share",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.score",
           "kind": "ui"
         }
       ],
