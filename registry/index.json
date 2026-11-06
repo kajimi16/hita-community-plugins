@@ -92,10 +92,10 @@
     {
       "id": "com.stupidtree.hita.ui.news",
       "name": "资讯",
-      "version": "0.1.0",
-      "url": "../dist/hita-news-0.1.0.apk",
-      "sha256": "deb46c725049569a40862b824fe128a888bce2e2db39301e93f8c99ff8d002bb",
-      "size": 621849,
+      "version": "0.1.1",
+      "url": "../dist/hita-news-0.1.1.apk",
+      "sha256": "71880f266b1f98fe7e77326c02fcd125150c8a5b14a2c8989bfc71335a0bb524",
+      "size": 621889,
       "minHostApi": 7,
       "description": "HOA 博客资讯",
       "author": "kajimi16",
@@ -104,15 +104,16 @@
         "HOA"
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
-      "updatedAt": "2026-11-06"
+      "updatedAt": "2026-11-06",
+      "changelog": "新增主界面资讯标签"
     },
     {
       "id": "com.stupidtree.hita.ui.ai",
       "name": "AI 助手",
-      "version": "0.11.0",
-      "url": "../dist/hita-ai-0.11.0.apk",
-      "sha256": "1db3242be329f5ed20e3f87dace679a748696bb0f0c867fa6d35d562abedb782",
-      "size": 645645,
+      "version": "0.11.1",
+      "url": "../dist/hita-ai-0.11.1.apk",
+      "sha256": "72e26476ce44c8314e84ef386e0e285b23941a817af73a27c748b28fe729a485",
+      "size": 645677,
       "minHostApi": 7,
       "description": "OpenAI 兼容对话助手（自带 API Key）",
       "author": "kajimi16",
@@ -121,7 +122,8 @@
         "对话"
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
-      "updatedAt": "2026-11-06"
+      "updatedAt": "2026-11-06",
+      "changelog": "新增主界面 AI 标签，可直接进入助手"
     },
     {
       "id": "com.stupidtree.hita.ui.credit",
