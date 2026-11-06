@@ -381,7 +381,8 @@
         },
         {
           "id": "com.stupidtree.hita.ui.share",
-          "kind": "ui"
+          "kind": "ui",
+          "required": false
         },
         {
           "id": "com.stupidtree.hita.ui.score",
@@ -389,7 +390,8 @@
         },
         {
           "id": "com.stupidtree.hita.ui.training",
-          "kind": "ui"
+          "kind": "ui",
+          "required": false
         },
         {
           "id": "com.stupidtree.hita.ui.compare",
