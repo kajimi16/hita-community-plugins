@@ -207,6 +207,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.group",
+      "name": "课表组合",
+      "version": "0.1.0",
+      "url": "../dist/hita-group-0.1.0.apk",
+      "sha256": "c15e7ca7a85d982f32bd55c963318d0846dfba337dc303e717c7fc8691cdd079",
+      "size": 623961,
+      "minHostApi": 7,
+      "description": "组内切换与合并视图",
+      "author": "kajimi16",
+      "tags": [
+        "课表",
+        "组合"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -302,6 +319,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.compare",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.group",
           "kind": "ui"
         }
       ],
