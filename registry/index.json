@@ -280,10 +280,10 @@
     {
       "id": "com.stupidtree.hita.ui.homework",
       "name": "作业",
-      "version": "0.1.0",
-      "url": "../dist/hita-homework-0.1.0.apk",
-      "sha256": "2435c9372bd995bb3e38c690d839bcc58856b207359f78e8220788c4538766ad",
-      "size": 624073,
+      "version": "0.1.1",
+      "url": "../dist/hita-homework-0.1.1.apk",
+      "sha256": "c4e154688abaeb9205bd3aebcac94be44193197677238d3f4a44bc002218000f",
+      "size": 626481,
       "minHostApi": 7,
       "description": "本地作业清单：按日期分组、完成/删除、离线保存",
       "author": "kajimi16",
@@ -293,7 +293,7 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06",
-      "changelog": "首个版本，主界面作业标签"
+      "changelog": "移除不可点复选框；minSdk 降到 23"
     }
   ],
   "presets": [
