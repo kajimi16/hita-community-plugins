@@ -190,6 +190,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.compare",
+      "name": "课表对比",
+      "version": "0.1.0",
+      "url": "../dist/hita-compare-0.1.0.apk",
+      "sha256": "6ec689fe6c47d5776a004ab3f358c845ce7b6a3701457e601c8f1c44ebca97dd",
+      "size": 620393,
+      "minHostApi": 7,
+      "description": "两份课表时间重叠对比",
+      "author": "kajimi16",
+      "tags": [
+        "课表",
+        "对比"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -281,6 +298,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.training",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.compare",
           "kind": "ui"
         }
       ],
