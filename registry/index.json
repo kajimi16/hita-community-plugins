@@ -45,10 +45,13 @@
       "url": "../dist/hita-reminder-0.1.2.apk",
       "sha256": "b2460fbeb8780d217d8f01f94553a7b8ac2eb4a52313f9e51476d155c01d380f",
       "size": 621917,
-      "minHostApi": "7",
+      "minHostApi": 7,
       "description": "上课提醒与今日课程小组件",
       "author": "kajimi16",
-      "tags": "课表,提醒",
+      "tags": [
+        "课表",
+        "提醒"
+      ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
     },
@@ -59,10 +62,13 @@
       "url": "../dist/hita-links-0.1.0.apk",
       "sha256": "44fb8c127ddcecd791dbf37c80b583a4dfe2f3de799cc667d42af43ebcb4982d",
       "size": 613661,
-      "minHostApi": "7",
+      "minHostApi": 7,
       "description": "教务、HOA、校园网、图书馆入口",
       "author": "kajimi16",
-      "tags": "网址,教务",
+      "tags": [
+        "网址",
+        "教务"
+      ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
     }
