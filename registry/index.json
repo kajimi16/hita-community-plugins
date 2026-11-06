@@ -145,10 +145,10 @@
     {
       "id": "com.stupidtree.hita.ui.share",
       "name": "课表分享",
-      "version": "0.2.2",
-      "url": "../dist/hita-share-0.2.2.apk",
-      "sha256": "066a0c0b2dfa27df9569c9c28b976522136de87ea02ee3c34a750197461717ae",
-      "size": 638717,
+      "version": "0.2.3",
+      "url": "../dist/hita-share-0.2.3.apk",
+      "sha256": "62bcb64ec9ee0c778e3a388173a1ab7b3ce0fddefeb5f5eca3fda124ed59c666",
+      "size": 643205,
       "minHostApi": 7,
       "description": "导出 ICS 并系统分享",
       "author": "kajimi16",
@@ -157,7 +157,8 @@
         "分享"
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
-      "updatedAt": "2026-11-06"
+      "updatedAt": "2026-11-06",
+      "changelog": "新增好友课表收藏：保存口令、再导入、删除"
     },
     {
       "id": "com.stupidtree.hita.ui.score",
