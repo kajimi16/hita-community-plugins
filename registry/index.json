@@ -92,10 +92,10 @@
     {
       "id": "com.stupidtree.hita.ui.news",
       "name": "资讯",
-      "version": "0.1.1",
-      "url": "../dist/hita-news-0.1.1.apk",
-      "sha256": "71880f266b1f98fe7e77326c02fcd125150c8a5b14a2c8989bfc71335a0bb524",
-      "size": 621889,
+      "version": "0.1.2",
+      "url": "../dist/hita-news-0.1.2.apk",
+      "sha256": "cadc7a157cbe3fc2cbe662fe40b6d6d4885e9767ca93528356915a452c478ac0",
+      "size": 623541,
       "minHostApi": 7,
       "description": "HOA 博客资讯",
       "author": "kajimi16",
@@ -105,7 +105,7 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06",
-      "changelog": "新增主界面资讯标签"
+      "changelog": "文章改为插件内 WebView 阅读，可返回列表"
     },
     {
       "id": "com.stupidtree.hita.ui.ai",
