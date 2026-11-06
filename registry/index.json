@@ -257,6 +257,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.course",
+      "name": "选课助手",
+      "version": "0.1.0",
+      "url": "../dist/hita-course-0.1.0.apk",
+      "sha256": "1ca507c8aa448d71923b017b50bc41df257620028683e397f61d88c80ca374e3",
+      "size": 618237,
+      "minHostApi": 7,
+      "description": "深圳教务课程目录只读浏览",
+      "author": "kajimi16",
+      "tags": [
+        "选课",
+        "课程目录"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -364,6 +381,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.update",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.course",
           "kind": "ui"
         }
       ],
