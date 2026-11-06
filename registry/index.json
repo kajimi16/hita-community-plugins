@@ -224,6 +224,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.live",
+      "name": "直播课",
+      "version": "0.1.0",
+      "url": "../dist/hita-live-0.1.0.apk",
+      "sha256": "476dbbe5b309ed382485a04dead70379cf691e521d0fc94833b32033b685802d",
+      "size": 618745,
+      "minHostApi": 7,
+      "description": "今日直播链接与提醒",
+      "author": "kajimi16",
+      "tags": [
+        "直播",
+        "提醒"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -323,6 +340,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.group",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.live",
           "kind": "ui"
         }
       ],
