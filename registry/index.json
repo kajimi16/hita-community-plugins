@@ -330,7 +330,7 @@
       "version": "0.1",
       "source": "HITA_Android v3.1.2",
       "minHostApi": 7,
-      "description": "按市场插件逐步复刻 v3.1.2；当前批次包含提醒与实用网址，其余功能持续补齐。",
+      "description": "按市场插件复刻 HITA_Android v3.1.2，共 19 个插件：课表/教务/资源/个人 + 提醒/网址/外观/资讯/AI/学分/分享/成绩/培养方案/对比/组合/选课/直播/通知/更新。",
       "plugins": [
         {
           "id": "com.stupidtree.hitax.timetable",
