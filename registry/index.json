@@ -110,10 +110,10 @@
     {
       "id": "com.stupidtree.hita.ui.ai",
       "name": "AI 助手",
-      "version": "0.11.1",
-      "url": "../dist/hita-ai-0.11.1.apk",
-      "sha256": "72e26476ce44c8314e84ef386e0e285b23941a817af73a27c748b28fe729a485",
-      "size": 645677,
+      "version": "0.11.2",
+      "url": "../dist/hita-ai-0.11.2.apk",
+      "sha256": "8d931c42ec509c331d075e2c0164f6c5e487faead68409c97043e0c65b4a01a8",
+      "size": 647733,
       "minHostApi": 7,
       "description": "OpenAI 兼容对话助手（自带 API Key）",
       "author": "kajimi16",
@@ -123,7 +123,7 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06",
-      "changelog": "新增主界面 AI 标签，可直接进入助手"
+      "changelog": "新增空教室查询工具"
     },
     {
       "id": "com.stupidtree.hita.ui.credit",
