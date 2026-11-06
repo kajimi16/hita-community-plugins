@@ -122,6 +122,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.credit",
+      "name": "学分统计",
+      "version": "0.1.0",
+      "url": "../dist/hita-credit-0.1.0.apk",
+      "sha256": "68ffbd4fd6b02514e102509879437417a06655b398146a6985f7a938cfcdac4a",
+      "size": 617393,
+      "minHostApi": 7,
+      "description": "按课表统计课程与学分",
+      "author": "kajimi16",
+      "tags": [
+        "学分",
+        "统计"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -197,6 +214,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.ai",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.credit",
           "kind": "ui"
         }
       ],
