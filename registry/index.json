@@ -163,10 +163,10 @@
     {
       "id": "com.stupidtree.hita.ui.score",
       "name": "成绩分析",
-      "version": "0.1.0",
-      "url": "../dist/hita-score-0.1.0.apk",
-      "sha256": "8110d8dfda787dec9dc8a6917603ee926391597a387fd7126fe1e79b432a167e",
-      "size": 615481,
+      "version": "0.1.1",
+      "url": "../dist/hita-score-0.1.1.apk",
+      "sha256": "bc0b6205d23eae15f079006ed03fc4ea29139732258f6ac91ba6f44a7f7b1e07",
+      "size": 615641,
       "minHostApi": 7,
       "description": "GPA、排名与成绩明细",
       "author": "kajimi16",
@@ -175,7 +175,8 @@
         "GPA"
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
-      "updatedAt": "2026-11-06"
+      "updatedAt": "2026-11-06",
+      "changelog": "修复真实账号下成绩页一直加载中"
     },
     {
       "id": "com.stupidtree.hita.ui.training",
