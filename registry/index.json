@@ -105,6 +105,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.ai",
+      "name": "AI 助手",
+      "version": "0.1.0",
+      "url": "../dist/hita-ai-0.1.0.apk",
+      "sha256": "8ece6249b127986cc1a2ca45a54c81d1f81cd6c275501a9b445287d7c9eef822",
+      "size": 625185,
+      "minHostApi": 7,
+      "description": "OpenAI 兼容对话助手（自带 API Key）",
+      "author": "kajimi16",
+      "tags": [
+        "AI",
+        "对话"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -176,6 +193,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.news",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.ai",
           "kind": "ui"
         }
       ],
