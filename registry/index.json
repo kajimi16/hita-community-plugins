@@ -276,6 +276,24 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.homework",
+      "name": "作业",
+      "version": "0.1.0",
+      "url": "../dist/hita-homework-0.1.0.apk",
+      "sha256": "2435c9372bd995bb3e38c690d839bcc58856b207359f78e8220788c4538766ad",
+      "size": 624073,
+      "minHostApi": 7,
+      "description": "本地作业清单：按日期分组、完成/删除、离线保存",
+      "author": "kajimi16",
+      "tags": [
+        "作业",
+        "待办"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06",
+      "changelog": "首个版本，主界面作业标签"
     }
   ],
   "presets": [
@@ -315,7 +333,7 @@
       "version": "0.1",
       "source": "HITA_Android v3.1.2",
       "minHostApi": 7,
-      "description": "按市场插件复刻 HITA_Android v3.1.2，共 18 个插件：课表/教务/资源/个人 + 提醒/网址/外观/资讯/AI/学分/分享/成绩/培养方案/对比/组合/直播/通知/更新。",
+      "description": "按市场插件复刻 HITA_Android v3.1.2，共 19 个插件：课表/教务/资源/个人 + 作业/提醒/网址/外观/资讯/AI/学分/分享/成绩/培养方案/对比/组合/直播/通知/更新。",
       "plugins": [
         {
           "id": "com.stupidtree.hitax.timetable",
@@ -332,6 +350,10 @@
         {
           "id": "com.stupidtree.hitax.user",
           "kind": "builtin"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.homework",
+          "kind": "ui"
         },
         {
           "id": "com.stupidtree.hita.ui.reminder",
