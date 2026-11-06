@@ -71,6 +71,23 @@
       ],
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.appearance",
+      "name": "外观与字体",
+      "version": "0.1.0",
+      "url": "../dist/hita-appearance-0.1.0.apk",
+      "sha256": "e898c4e2bb556a502298134516b696f5e1559c824480e6bd518ce98da0f5a33c",
+      "size": 617261,
+      "minHostApi": 7,
+      "description": "深色、配色预设与字体缩放",
+      "author": "kajimi16",
+      "tags": [
+        "主题",
+        "字体"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-06"
     }
   ],
   "presets": [
@@ -134,6 +151,10 @@
         },
         {
           "id": "com.stupidtree.hita.ui.links",
+          "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.appearance",
           "kind": "ui"
         }
       ]
