@@ -336,7 +336,7 @@
       "version": "0.1",
       "source": "HITA_Android v3.1.2",
       "minHostApi": 7,
-      "description": "按市场插件复刻 HITA_Android v3.1.2，共 19 个插件：课表/教务/资源/个人 + 作业/提醒/网址/外观/资讯/AI/学分/分享/成绩/培养方案/对比/组合/直播/通知/更新。",
+      "description": "按市场插件复刻 HITA_Android v3.1.2；底栏按上游固定为 待办/今日/时间表/助手/资讯/更多。资讯位用 HOA 资讯源（θ 社区后端当前不可用）；不采集用量统计。",
       "plugins": [
         {
           "id": "com.stupidtree.hitax.timetable",
@@ -363,15 +363,15 @@
           "kind": "ui"
         },
         {
+          "id": "com.stupidtree.hita.ui.news",
+          "kind": "ui"
+        },
+        {
           "id": "com.stupidtree.hita.ui.links",
           "kind": "ui"
         },
         {
           "id": "com.stupidtree.hita.ui.appearance",
-          "kind": "ui"
-        },
-        {
-          "id": "com.stupidtree.hita.ui.news",
           "kind": "ui"
         },
         {
@@ -420,7 +420,39 @@
       "migration": [
         "timetable.ics"
       ],
-      "repo": "https://github.com/HIT-A/HITA_Android"
+      "repo": "https://github.com/HIT-A/HITA_Android",
+      "tabs": [
+        {
+          "id": "com.stupidtree.hita.ui.homework",
+          "title": "待办",
+          "order": 0
+        },
+        {
+          "id": "hita.timeline",
+          "title": "今日",
+          "order": 1
+        },
+        {
+          "id": "hita.timetable",
+          "title": "时间表",
+          "order": 2
+        },
+        {
+          "id": "com.stupidtree.hita.ui.ai",
+          "title": "助手",
+          "order": 3
+        },
+        {
+          "id": "com.stupidtree.hita.ui.news",
+          "title": "资讯",
+          "order": 4
+        },
+        {
+          "id": "hita.more",
+          "title": "更多",
+          "order": 5
+        }
+      ]
     }
   ]
 }
