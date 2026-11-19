@@ -296,6 +296,44 @@
       "repo": "https://github.com/kajimi16/OH-MY-HITA",
       "updatedAt": "2026-11-06",
       "changelog": "移除不可点复选框；minSdk 降到 23"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.announcement",
+      "name": "公告",
+      "version": "0.1.0",
+      "url": "../dist/hita-announcement-0.1.0.apk",
+      "sha256": "d08394f99458c9d1d9bef454f64701d63e9486bdd520bae766356bf6503a00a2",
+      "size": 822186,
+      "minHostApi": 7,
+      "entryClass": "com.stupidtree.hita.ui.announcement.AnnouncementUiPlugin",
+      "description": "版本/服务公告",
+      "changelog": "新增",
+      "author": "kajimi16",
+      "tags": [
+        "HITA",
+        "插件"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-19"
+    },
+    {
+      "id": "com.stupidtree.hita.ui.community",
+      "name": "深圳课程浏览",
+      "version": "0.1.0",
+      "url": "../dist/hita-community-0.1.0.apk",
+      "sha256": "e719ef7f718c8bb2ecdea44ef6512feb42e1c8633a95116d0441e9291796bd92",
+      "size": 840316,
+      "minHostApi": 7,
+      "entryClass": "com.stupidtree.hita.ui.community.CommunityUiPlugin",
+      "description": "深圳教务课程池",
+      "changelog": "新增",
+      "author": "kajimi16",
+      "tags": [
+        "HITA",
+        "插件"
+      ],
+      "repo": "https://github.com/kajimi16/OH-MY-HITA",
+      "updatedAt": "2026-11-19"
     }
   ],
   "presets": [
@@ -415,6 +453,16 @@
         {
           "id": "com.stupidtree.hita.ui.notice",
           "kind": "ui"
+        },
+        {
+          "id": "com.stupidtree.hita.ui.announcement",
+          "kind": "ui",
+          "required": false
+        },
+        {
+          "id": "com.stupidtree.hita.ui.community",
+          "kind": "ui",
+          "required": false
         }
       ],
       "migration": [
