@@ -369,6 +369,42 @@
       "repo": "https://github.com/LiPu-jpg/HITA_L"
     },
     {
+      "id": "hita-cute-1.6.0",
+      "name": "HITA CUTE v1.6.0",
+      "version": "1.6.0",
+      "source": "HITA_CUTE v1.6.0",
+      "minHostApi": 10,
+      "description": "HITA_L 的可可爱爱分支：保留课表、教务、课程资源、个人主页与社区，并加入自定义背景、20 套主题色和 6 组课表配色。",
+      "plugins": [
+        {
+          "id": "com.stupidtree.hitax.timetable",
+          "kind": "builtin"
+        },
+        {
+          "id": "com.stupidtree.hitax.eas",
+          "kind": "builtin"
+        },
+        {
+          "id": "com.stupidtree.hitax.resource",
+          "kind": "builtin"
+        },
+        {
+          "id": "com.stupidtree.hitax.user",
+          "kind": "builtin"
+        },
+        {
+          "id": "com.stupidtree.hita.theta",
+          "kind": "builtin"
+        }
+      ],
+      "repo": "https://github.com/Zethpa/HITA_CUTE",
+      "tags": [
+        "HITA",
+        "HITA_CUTE",
+        "整合包"
+      ]
+    },
+    {
       "id": "hita-android-3.1.2",
       "name": "HITA Android 3.1.2 复刻",
       "version": "0.1",
